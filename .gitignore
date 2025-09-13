@@ -9,8 +9,7 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Arquivos de instância e banco de dados local
-/instance/
+# Arquivos de banco de dados (dentro ou fora da pasta instance)
 *.db
 *.sqlite3
 
