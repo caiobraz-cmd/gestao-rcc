@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block conteudo %}
+    <div class="header-action">
+        <h1>Pessoas Cadastradas</h1>
+        <a href="{{ url_for('pessoas_bp.novo_form') }}" class="btn btn-primary">Adicionar Pessoa</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pessoa in pessoas %}
+            <tr>
+                <td>{{ pessoa.nome }}</td>
+                <td>{{ pessoa.email }}</td>
+                <td>{{ pessoa.telefone }}</td>
+                <td class="acoes">
+                    <a href="{{ url_for('pessoas_bp.editar_form', id=pessoa.id) }}" class="btn btn-secondary">Editar</a>
+                    <form action="{{ url_for('pessoas_bp.deletar', id=pessoa.id) }}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
