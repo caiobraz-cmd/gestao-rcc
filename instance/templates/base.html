@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} - Gestão de Pessoas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('pessoas_bp.listar') }}" class="logo">Sistema Registros</a>
+            <ul>
+                <li><a href="{{ url_for('pessoas_bp.listar') }}">Listar</a></li>
+                <li><a href="{{ url_for('pessoas_bp.novo_form') }}">Adicionar</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        {% block conteudo %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 - Sistema de Gestão</p>
+    </footer>
+</body>
+</html>
