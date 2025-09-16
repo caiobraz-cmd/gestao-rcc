@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from config import DevelopmentConfig, ProductionConfig
 
@@ -16,15 +16,12 @@ def create_app():
 
     db.init_app(app)
 
+    with app.app_context():
+        from instance.routes.pessoa_routes import pessoa_bp
+        app.register_blueprint(pessoa_bp)
+
     @app.route("/")
     def home():
-        return "Sistema de Gestão de pessoas - Rede de Combate ao Câncer (RCC)"
-    
+       return redirect(url_for('pessoa_bp.listar'))
+
     return app
-
-    if __name__ == "__main__":
-        app = create_app()
-
-        debug_mode = os.environ.get("FLASK_ENV", "development") != "production"
-        app.run(debug=debug_mode)
-        

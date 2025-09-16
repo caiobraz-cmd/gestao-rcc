@@ -2,7 +2,7 @@
 {% block conteudo %}
     <div class="header-action">
         <h1>Pessoas Cadastradas</h1>
-        <a href="{{ url_for('pessoas_bp.novo_form') }}" class="btn btn-primary">Adicionar Pessoa</a>
+        <a href="{{ url_for('pessoa_bp.novo') }}" class="btn btn-primary">Adicionar Pessoa</a>
     </div>
     <table>
         <thead>
@@ -20,8 +20,8 @@
                 <td>{{ pessoa.email }}</td>
                 <td>{{ pessoa.telefone }}</td>
                 <td class="acoes">
-                    <a href="{{ url_for('pessoas_bp.editar_form', id=pessoa.id) }}" class="btn btn-secondary">Editar</a>
-                    <form action="{{ url_for('pessoas_bp.deletar', id=pessoa.id) }}" method="post" style="display: inline;">
+                    <a href="{{ url_for('pessoa_bp.editar', id=pessoa.id) }}" class="btn btn-secondary">Editar</a>
+                    <form action="{{ url_for('pessoa_bp.deletar', id=pessoa.id) }}" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-danger">Excluir</button>
                     </form>
                 </td>

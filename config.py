@@ -1,6 +1,12 @@
 import os 
 from urllib.parse import quote_plus
 
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+instance_path = os.path.join(basedir, 'instance')
+if not os.path.exists(instance_path):
+    os.makedirs(instance_path)
+
 if os.environ.get("FLASK_ENV") != "production":
     try: 
 
@@ -12,11 +18,8 @@ if os.environ.get("FLASK_ENV") != "production":
 class BaseConfig: 
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-seret-key")
 
-    DATABASE_URL = os.environ.get("DATABASE_URL")
-    if DATABASE_URL:
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL
-    else:
-        SQLALCHEMY_DATABASE_URI = "sqlite:///linstance/banco.db"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or \
+        'sqlite:///' + os.path.join(instance_path, 'banco.db')
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
