@@ -7,8 +7,10 @@
     <table>
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Nome</th>
-                <th>Email</th>
+                <th>Idade</th>
+                <th>Diagnostico</th>
                 <th>Telefone</th>
                 <th>Ações</th>
             </tr>
@@ -16,14 +18,18 @@
         <tbody>
             {% for pessoa in pessoas %}
             <tr>
+                <td>{{ pessoa.id }}</td>
                 <td>{{ pessoa.nome }}</td>
-                <td>{{ pessoa.email }}</td>
+                <td>{{ pessoa.idade }}</td>
+                <td>{{ pessoa.diagnostico }}</td>
                 <td>{{ pessoa.telefone }}</td>
                 <td class="acoes">
                     <a href="{{ url_for('pessoa_bp.editar', id=pessoa.id) }}" class="btn btn-secondary">Editar</a>
                     <form action="{{ url_for('pessoa_bp.deletar', id=pessoa.id) }}" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-danger">Excluir</button>
                     </form>
+                    <!--Criar outro pessoa_bp.detalhes para criar uma nova aba só para mostrar os itens cadastrados da pessoa (talvez nao precisa, mas to pensando ainda...)-->
+                    <a href="{{ url_for('pessoa_bp.listar', id=pessoa.id) }}" class="btn btn-primary">Detalhes</a>
                 </td>
             </tr>
             {% endfor %}
