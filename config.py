@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Arquivo de Configuração da Aplicação Flask.
 
@@ -13,13 +12,9 @@ from urllib.parse import quote_plus
 # --- Configuração de Caminhos Dinâmicos ---
 
 # 'basedir' calcula o caminho absoluto para o diretório raiz do projeto.
-# Isso garante que a aplicação encontre seus arquivos, não importa de onde
-# o script de execução seja chamado.
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Define o caminho para a pasta 'instance' e a cria se não existir.
-# A pasta 'instance' é ideal para arquivos que não devem ser versionados,
-# como o banco de dados de desenvolvimento local.
 instance_path = os.path.join(basedir, 'instance')
 if not os.path.exists(instance_path):
     os.makedirs(instance_path)
@@ -41,23 +36,11 @@ class BaseConfig:
     """Configurações base que se aplicam a todos os ambientes."""
 
     #: Chave secreta para segurança de sessões e cookies.
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-seret-key")
 
-    #: URI de conexão com o banco de dados. Prioriza a variável de ambiente
-    #: DATABASE_URL, caso contrário, usa um banco SQLite local na pasta 'instance'.
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or \
-        'sqlite:///' + os.path.join(instance_path, 'banco.db')
-
-    #: Desativa o rastreamento de modificações do SQLAlchemy para otimização.
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    #: Opções de otimização para o pool de conexões do SQLAlchemy.
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_size": int(os.environ.get("DB_POOL_SIZE", 5)),
-        "max_overflow": int(os.environ.get("DB_MAX_OVERFLOW", 10)),
-        "pool_timeout": int(os.environ.get("DB_POOL_TIMEOUT", 30)),
-        "pool_recycle": int(os.environ.get("DB_POOL_RECYCLE", 1800)),
-    }
+    #: URL base da API do Oracle (ORDS) de onde os dados serão consumidos.
+    #: Lida a partir da variável de ambiente API_BASE_URL.
+    API_BASE_URL = os.environ.get("API_BASE_URL")
     
     #: Configurações padrão para DEBUG e TESTING.
     DEBUG = False
@@ -68,15 +51,11 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
     """Configurações para o ambiente de desenvolvimento."""
     DEBUG = True
-    #: Se ativado, o SQLAlchemy imprime todas as queries SQL executadas.
-    SQLALCHEMY_ECHO = os.environ.get("SQLALCHEMY_ECHO", "False").lower() in ("1", "true", "yes")
 
 
 class TestingConfig(BaseConfig): 
     """Configurações para o ambiente de testes automatizados."""
     TESTING = True
-    #: Usa um banco de dados em memória para testes rápidos e isolados.
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     WTF_CSRF_ENABLED = False
 
 
@@ -87,5 +66,6 @@ class ProductionConfig(BaseConfig):
     @classmethod
     def check_env(cls):
         """Verifica se variáveis críticas estão definidas em produção."""
-        if not os.environ.get("DATABASE_URL"):
-            raise RuntimeError("DATABASE_URL não está definida em ProductionConfig")
+        # Atualizado para verificar a URL da API, que agora é crítica.
+        if not os.environ.get("API_BASE_URL"):
+            raise RuntimeError("API_BASE_URL não está definida em ProductionConfig")

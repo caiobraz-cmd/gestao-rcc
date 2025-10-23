@@ -1,26 +1,53 @@
 {% extends "base.html" %}
+
 {% block conteudo %}
     <h2>Cadastrar Nova Pessoa</h2>
     <form action="{{ url_for('pessoa_bp.novo') }}" method="post" class="form-card">
+        
         <div class="form-group">
-            <label for="nome">Nome Completo</label>
-            <input type="text" id="nome" name="nome" required>
+            <label for="ds_nome">Nome Completo</label>
+            <input type="text" id="ds_nome" name="ds_nome" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="num_cpf">CPF</label>
+            <input type="text" id="num_cpf" name="num_cpf" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="dt_nascimento">Data de Nascimento</label>
+            <input type="date" id="dt_nascimento" name="dt_nascimento" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="num_telefone">Telefone</label>
+            <input type="tel" id="num_telefone" name="num_telefone">
+        </div>
+        
+        <div class="form-group">
+            <label for="char_endereco">Endereço</label>
+            <input type="text" id="char_endereco" name="char_endereco">
+        </div>
+
+        <div class="form-group">
+            <label for="char_diagnostico">Diagnóstico</label>
+            <textarea id="char_diagnostico" name="char_diagnostico"></textarea>
         </div>
         <div class="form-group">
-            <label for="cpf">CPF</label>
-            <input type="text" id="cpf" name="cpf" required>
-        </div> 
-        <div class="form-group">
-            <label for="idade">Idade</label>
-            <input type="text" id="idade" name="idade" required>
-        </div> 
-        <div class="form-group">
-            <label for="telefone">Telefone</label>
-            <input type="tel" id="telefone" name="telefone">
+            <label for="char_tratamento">Tratamento</label>
+            <textarea id="char_tratamento" name="char_tratamento"></textarea>
         </div>
         <div class="form-group">
-            <label for="endereco">Endereço</label>
-            <input type="text" id="endereco" name="endereco">
+            <label for="char_medicamento">Medicamentos</label>
+            <textarea id="char_medicamento" name="char_medicamento"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="char_alergia">Alergias</label>
+            <textarea id="char_alergia" name="char_alergia"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="char_observacoes">Observações</label>
+            <textarea id="char_observacoes" name="char_observacoes"></textarea>
         </div>
         <div class="form-actions">
             <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-secondary">Cancelar</a>
