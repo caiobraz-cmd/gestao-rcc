@@ -1,17 +1,40 @@
-# Ambiente Virtual
-.venv/
+# Arquivos Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Ambientes virtuais
 venv/
 env/
+ENV/
+.venv
 
-# Arquivos compilados do Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Flask
+instance/
+.webassets-cache
 
-# Arquivos de banco de dados (dentro ou fora da pasta instance)
-*.db
-*.sqlite3
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
 
-# Outros
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema Operacional
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Banco de dados
+*.db
+*.sqlite
+*.sqlite3

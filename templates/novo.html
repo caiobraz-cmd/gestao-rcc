@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+    <h2>Cadastrar Novo Paciente</h2>
+    
+    <form action="{{ url_for('pessoa_bp.novo') }}" method="post" class="form-card">
+        <div class="form-group">
+            <label for="ds_nome">Nome</label>
+            <input id="ds_nome" name="ds_nome" required>
+        </div>
+        <div class="form-group">
+            <label for="num_cpf">CPF</label>
+            <input type="text" id="num_cpf" name="num_cpf" required>
+        </div> 
+        <div class="form-group">
+            <label for="dt_nascimento">Data de nascimento</label>
+            <input type="date" id="dt_nascimento" name="dt_nascimento" required>
+        </div> 
+        <div class="form-group">
+            <label for="num_telefone">Telefone</label>
+            <input type="tel" id="num_telefone" name="num_telefone">
+        </div>
+        <div class="form-group">
+            <label for="char_endereco">Endereço</label>
+            <textarea id="char_endereco" name="char_endereco"></textarea>
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+            <label for="char_diagnostico">Diagnóstico</label>
+            <textarea id="char_diagnostico" name="char_diagnostico" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="char_tratamento">Tratamentos</label>
+            <textarea id="char_tratamento" name="char_tratamento" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="char_medicamento">Medicamentos</label>
+            <textarea id="char_medicamento" name="char_medicamento" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="char_alergia">Alergias</label>
+            <textarea id="char_alergia" name="char_alergia" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="char_observacoes">Observações</label>
+            <textarea id="char_observacoes" name="char_observacoes" rows="6"></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar Paciente</button>
+        </div>
+    </form>
+{% endblock %}

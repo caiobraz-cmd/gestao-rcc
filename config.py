@@ -30,13 +30,14 @@ if os.environ.get("FLASK_ENV") != "production":
     except Exception: 
         pass
 
+
 # --- Classes de Configuração ---
 
 class BaseConfig: 
     """Configurações base que se aplicam a todos os ambientes."""
 
     #: Chave secreta para segurança de sessões e cookies.
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-seret-key")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 
     #: URL base da API do Oracle (ORDS) de onde os dados serão consumidos.
     #: Lida a partir da variável de ambiente API_BASE_URL.
@@ -66,6 +67,5 @@ class ProductionConfig(BaseConfig):
     @classmethod
     def check_env(cls):
         """Verifica se variáveis críticas estão definidas em produção."""
-        # Atualizado para verificar a URL da API, que agora é crítica.
         if not os.environ.get("API_BASE_URL"):
             raise RuntimeError("API_BASE_URL não está definida em ProductionConfig")

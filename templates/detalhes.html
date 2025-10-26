@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+    <div class="header-action">
+        <h1>Detalhes de {{ pessoa.ds_nome }}</h1>
+        <div>
+            <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary">Editar</a>
+            <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-primary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="detalhes-card">
+        <h3>Informações Pessoais</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>ID:</strong> {{ pessoa.seq_id }}
+            </div>
+            <div class="info-item">
+                <strong>Nome:</strong> {{ pessoa.ds_nome }}
+            </div>
+            <div class="info-item">
+                <strong>CPF:</strong> {{ pessoa.num_cpf }}
+            </div>
+            <div class="info-item">
+                <strong>Data de Nascimento:</strong> {{ pessoa.dt_nascimento }}
+            </div>
+            <div class="info-item">
+                <strong>Telefone:</strong> {{ pessoa.num_telefone or 'Não informado' }}
+            </div>
+            <div class="info-item">
+                <strong>Endereço:</strong> {{ pessoa.char_endereco or 'Não informado' }}
+            </div>
+            {% if pessoa.data_obito %}
+            <div class="info-item">
+                <strong>Data de Óbito:</strong> <span style="color: red;">{{ pessoa.data_obito }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <h3>Informações Médicas</h3>
+        <div class="info-section">
+            <div class="info-item">
+                <strong>Diagnóstico:</strong>
+                <p>{{ pessoa.char_diagnostico or 'Não informado' }}</p>
+            </div>
+            <div class="info-item">
+                <strong>Tratamentos:</strong>
+                <p>{{ pessoa.char_tratamento or 'Não informado' }}</p>
+            </div>
+            <div class="info-item">
+                <strong>Medicamentos:</strong>
+                <p>{{ pessoa.char_medicamento or 'Não informado' }}</p>
+            </div>
+            <div class="info-item">
+                <strong>Alergias:</strong>
+                <p>{{ pessoa.char_alergia or 'Não informado' }}</p>
+            </div>
+            <div class="info-item">
+                <strong>Observações:</strong>
+                <p>{{ pessoa.char_observacoes or 'Não informado' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <hr style="margin: 2rem 0;">
+
+    <div class="header-action">
+        <h2>Histórico de Serviços</h2>
+        <a href="{{ url_for('pessoa_bp.novo_servico', id=pessoa.seq_id) }}" class="btn btn-primary">Adicionar Serviço</a>
+    </div>
+
+    {% if servicos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome do Serviço</th>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for servico in servicos %}
+                <tr>
+                    <td>{{ servico.seq_id }}</td>
+                    <td>{{ servico.ds_nome }}</td>
+                    <td>{{ servico.char_descricao or 'Sem descrição' }}</td>
+                    <td>{{ servico.dt_dataservico }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum serviço registrado para este paciente.</p>
+    {% endif %}
+{% endblock %}

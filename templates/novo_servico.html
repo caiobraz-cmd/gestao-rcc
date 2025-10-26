@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+    <h2>Registrar Novo Serviço para {{ pessoa.ds_nome }}</h2>
+    
+    <form action="{{ url_for('pessoa_bp.novo_servico', id=pessoa.seq_id) }}" method="post" class="form-card">
+        <div class="form-group">
+            <label for="ds_nome">Nome do Serviço</label>
+            <input type="text" id="ds_nome" name="ds_nome" required placeholder="Ex: Consulta, Exame, Tratamento">
+        </div>
+        
+        <div class="form-group">
+            <label for="char_descricao">Descrição</label>
+            <textarea id="char_descricao" name="char_descricao" rows="6" placeholder="Descreva detalhes do serviço realizado"></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('pessoa_bp.detalhes', id=pessoa.seq_id) }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar Serviço</button>
+        </div>
+    </form>
+{% endblock %}

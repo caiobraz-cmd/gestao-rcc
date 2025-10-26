@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+    <div class="header-action">
+        <h1>Pessoas Cadastradas</h1>
+        <a href="{{ url_for('pessoa_bp.novo') }}" class="btn btn-primary">Adicionar Pessoa</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Nascimento</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pessoa in pessoas %}
+            <tr>
+                <td>{{ pessoa.seq_id }}</td>
+                <td>{{ pessoa.ds_nome }}</td>
+                <td>{{ pessoa.num_cpf }}</td>
+                <td>{{ pessoa.dt_nascimento }}</td>
+                <td>{{ pessoa.num_telefone }}</td>
+                <td>
+                    {% if pessoa.data_obito %}
+                        <span style="color: red;">Óbito</span>
+                    {% else %}
+                        <span style="color: green;">Ativo</span>
+                    {% endif %}
+                </td>
+                <td class="acoes">
+                    <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary">Editar</a>
+                    <form action="{{ url_for('pessoa_bp.deletar', id=pessoa.seq_id) }}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta pessoa?');">
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                    <a href="{{ url_for('pessoa_bp.detalhes', id=pessoa.seq_id) }}" class="btn btn-primary">Detalhes</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">Nenhuma pessoa cadastrada ainda.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
