@@ -64,7 +64,7 @@ def novo():
     response = None
     if request.method == 'POST':
         try:
-            api_url = f"{get_api_url()}pessoas/"
+            api_url = f"{get_api_url()}pessoas"
 
             novo_dado = {
                 "ds_nome": request.form.get('ds_nome') or None,
