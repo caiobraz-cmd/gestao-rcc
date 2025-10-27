@@ -14,11 +14,6 @@ from urllib.parse import quote_plus
 # 'basedir' calcula o caminho absoluto para o diretório raiz do projeto.
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# Define o caminho para a pasta 'instance' e a cria se não existir.
-instance_path = os.path.join(basedir, 'instance')
-if not os.path.exists(instance_path):
-    os.makedirs(instance_path)
-
 # --- Carregamento de Variáveis de Ambiente (.env) ---
 
 # Em ambientes de não-produção, tenta carregar variáveis de um arquivo .env

@@ -39,7 +39,7 @@ def listar():
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
-        api_url = f"{get_api_url()}pessoas/"
+        api_url = f"{get_api_url()}pessoas"
         print(f"--- [DEBUG] GET para: {api_url} ---")
         response = requests.get(api_url, headers=headers, timeout=15)
 
