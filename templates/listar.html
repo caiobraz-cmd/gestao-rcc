@@ -3,7 +3,9 @@
 {% block conteudo %}
     <div class="header-action">
         <h1>Pessoas Cadastradas</h1>
-        <a href="{{ url_for('pessoa_bp.novo') }}" class="btn btn-primary">Adicionar Pessoa</a>
+        <a href="{{ url_for('pessoa_bp.novo') }}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Adicionar Pessoa
+        </a>
     </div>
 
     <table>
@@ -28,22 +30,28 @@
                 <td>{{ pessoa.num_telefone }}</td>
                 <td>
                     {% if pessoa.data_obito %}
-                        <span style="color: red;">Óbito</span>
+                        <span class="badge badge-death"><i class="fa-solid fa-cross"></i> Óbito</span>
                     {% else %}
-                        <span style="color: green;">Ativo</span>
+                        <span class="badge badge-active"><i class="fa-solid fa-heart-pulse"></i> Ativo</span>
                     {% endif %}
                 </td>
                 <td class="acoes">
-                    <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary">Editar</a>
+                    <a href="{{ url_for('pessoa_bp.detalhes', id=pessoa.seq_id) }}" class="btn btn-secondary" title="Ver Detalhes">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary" title="Editar">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
                     <form action="{{ url_for('pessoa_bp.deletar', id=pessoa.seq_id) }}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta pessoa?');">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
+                        <button type="submit" class="btn btn-danger" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                     </form>
-                    <a href="{{ url_for('pessoa_bp.detalhes', id=pessoa.seq_id) }}" class="btn btn-primary">Detalhes</a>
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="7">Nenhuma pessoa cadastrada ainda.</td>
+                <td colspan="7" style="text-align: center; color: #64748b; padding: 2rem;">
+                    Nenhuma pessoa cadastrada ainda.
+                </td>
             </tr>
             {% endfor %}
         </tbody>

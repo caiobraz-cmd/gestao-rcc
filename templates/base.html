@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ titulo }} - Gestão de Pessoas</title>
+    <title>{{ titulo }} - Gestão RCC</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
     <header>
         <nav>
-            <a href="{{ url_for('pessoa_bp.listar') }}" class="logo">Sistema Registros</a>
+            <a href="{{ url_for('pessoa_bp.listar') }}" class="logo">
+                <i class="fa-solid fa-notes-medical" style="color: #2563eb;"></i> Gestão RCC
+            </a>
             <ul>
-                <li><a href="{{ url_for('pessoa_bp.listar') }}">Listar</a></li>
-                <li><a href="{{ url_for('pessoa_bp.novo') }}">Adicionar</a></li>
+                <li><a href="{{ url_for('pessoa_bp.listar') }}"><i class="fa-solid fa-users"></i> Pacientes</a></li>
+                <li><a href="{{ url_for('pessoa_bp.novo') }}" class="nav-btn"><i class="fa-solid fa-plus"></i> Novo Cadastro</a></li>
             </ul>
         </nav>
     </header>
     <main class="container">
-        <!-- Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
+                <div class="flash-messages">
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}" role="alert">
+                    <div class="alert alert-{{ category }}">
+                        <i class="fa-solid {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-circle-exclamation{% else %}fa-info-circle{% endif %}"></i>
                         {{ message }}
                     </div>
                 {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
         
         {% block conteudo %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2025 - Rede de Combate ao Câncer</p>
+        <p>&copy; 2026 - Rede de Combate ao Câncer | Sistema de Gestão</p>
     </footer>
 </body>
-
 </html>

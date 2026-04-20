@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 
 {% block conteudo %}
-    <div class="header-action">
-        <h1>Detalhes de {{ pessoa.ds_nome }}</h1>
-        <div>
-            <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary">Editar</a>
-            <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-primary">Voltar</a>
-        </div>
+<div class="header-action">
+    <h1><i class="fa-regular fa-address-card" style="color: var(--primary-blue); margin-right: 10px;"></i> Detalhes: {{ pessoa.ds_nome }}</h1>
+    <div>
+        <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
+        <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Editar</a>
     </div>
-
+</div>
     <div class="detalhes-card">
         <h3>Informações Pessoais</h3>
         <div class="info-grid">
