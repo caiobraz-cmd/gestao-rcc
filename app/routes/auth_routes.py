@@ -6,7 +6,7 @@ from functools import wraps
 auth_bp = Blueprint('auth_bp', __name__, template_folder='../../templates')
 
 # --- NOSSO BANCO DE DADOS FICTÍCIO ---
-# Aqui simulamos o que viria da sua API Oracle. 
+# Aqui simulamos o que viria da API Oracle. 
 # Veja como a senha "senha123" foi transformada em um Hash seguro.
 MOCK_DATABASE = {
     "admin": {
