@@ -11,6 +11,7 @@ import requests
 import json
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from datetime import datetime
+from app.routes.auth_routes import login_required
 
 # --- Configuração do Blueprint ---
 pessoa_bp = Blueprint(
@@ -32,6 +33,7 @@ def get_api_url():
 # ============================================================================
 
 @pessoa_bp.route('/')
+@login_required
 def listar():
     """Exibe a lista de todas as pessoas cadastradas, buscando da API."""
     pessoas = []
@@ -59,6 +61,7 @@ def listar():
 
 
 @pessoa_bp.route('/novo', methods=['GET', 'POST'])
+@login_required
 def novo():
     """Cria um novo registro de Pessoa via API."""
     response = None

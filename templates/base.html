@@ -15,14 +15,19 @@
 </head>
 <body>
     <header>
-        <nav>
+<nav>
             <a href="{{ url_for('pessoa_bp.listar') }}" class="logo">
                 <i class="fa-solid fa-notes-medical" style="color: #2563eb;"></i> Gestão RCC
             </a>
+            
+            {% if session.get('usuario_id') %}
             <ul>
+                <li><span style="color: var(--text-muted); margin-right: 15px;">Olá, {{ session.get('usuario_nome') }}</span></li>
                 <li><a href="{{ url_for('pessoa_bp.listar') }}"><i class="fa-solid fa-users"></i> Pacientes</a></li>
                 <li><a href="{{ url_for('pessoa_bp.novo') }}" class="nav-btn"><i class="fa-solid fa-plus"></i> Novo Cadastro</a></li>
+                <li><a href="{{ url_for('auth_bp.logout') }}" style="color: var(--danger);"><i class="fa-solid fa-power-off"></i> Sair</a></li>
             </ul>
+            {% endif %}
         </nav>
     </header>
     <main class="container">

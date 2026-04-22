@@ -32,10 +32,14 @@ def create_app():
 
     # Registro de Blueprints
     with app.app_context():
+        # Blueprint de Autenticação (NOVO)
+        from app.routes.auth_routes import auth_bp
+        app.register_blueprint(auth_bp, url_prefix='/auth')
+
         # Importa e registra o blueprint de pessoas
         from app.routes.pessoa_routes import pessoa_bp
         app.register_blueprint(pessoa_bp, url_prefix='/')
-
+        
     # Rota de teste
     @app.route("/ping")
     def ping():
