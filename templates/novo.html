@@ -47,10 +47,40 @@
             <label for="char_observacoes">Observações</label>
             <textarea id="char_observacoes" name="char_observacoes" rows="6"></textarea>
         </div>
+        <div class="form-group">
+    <label for="frequencia_cesta">Frequência da Cesta Básica (Dias)</label>
+    <select id="frequencia_cesta" name="frequencia_cesta" onchange="verificarOutros()">
+        <option value="">Não recebe</option>
+        <option value="7">7 Dias</option>
+        <option value="15">15 Dias</option>
+        <option value="20">20 Dias</option>
+        <option value="30">30 Dias</option>
+        <option value="outros">Outros...</option>
+    </select>
+    <input type="number" id="frequencia_outros" name="frequencia_outros" placeholder="Digite a quantidade de dias" style="display: none; margin-top: 10px;">
+</div>
+
+<script>
+    function verificarOutros() {
+        var select = document.getElementById("frequencia_cesta");
+        var inputOutros = document.getElementById("frequencia_outros");
         
+        if (select.value === "outros") {
+            inputOutros.style.display = "block";
+            inputOutros.required = true;
+            inputOutros.name = "frequencia_cesta"; // Substitui o valor enviado
+            select.name = "frequencia_ignorada";
+        } else {
+            inputOutros.style.display = "none";
+            inputOutros.required = false;
+            select.name = "frequencia_cesta";
+        }
+    }
+</script>
         <div class="form-actions">
             <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-secondary">Cancelar</a>
             <button type="submit" class="btn btn-primary">Salvar Paciente</button>
         </div>
+        
     </form>
 {% endblock %}

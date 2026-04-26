@@ -10,7 +10,7 @@ a API RESTful (back-end).
 import requests
 import json
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.routes.auth_routes import login_required
 
 # --- Configuração do Blueprint ---
@@ -21,6 +21,20 @@ pessoa_bp = Blueprint(
     static_folder='../../static'
 )
 
+# ============================================================================
+# DADOS DE TESTE (MOCK) PARA A CESTA BÁSICA
+# ============================================================================
+# Mude para False quando for usar o banco de dados Oracle de verdade
+USAR_MOCK = True 
+
+MOCK_PESSOAS = [
+    { "seq_id": 1, "ds_nome": "Marcos Oliveira (Atrasado)", "num_cpf": "111.222.333-44", "dt_nascimento": "1980-05-15", "num_telefone": "(44) 9999-0001", "dt_ultima_cesta": (datetime.now() - timedelta(days=40)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 30 },
+    { "seq_id": 2, "ds_nome": "Ana Costa (Atrasado)", "num_cpf": "222.333.444-55", "dt_nascimento": "1992-08-20", "num_telefone": "(44) 9999-0002", "dt_ultima_cesta": (datetime.now() - timedelta(days=12)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 7 },
+    { "seq_id": 3, "ds_nome": "João Silva", "num_cpf": "333.444.555-66", "dt_nascimento": "1975-03-10", "num_telefone": "(44) 9999-0003", "dt_ultima_cesta": (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 30 },
+    { "seq_id": 4, "ds_nome": "Maria Santos", "num_cpf": "444.555.666-77", "dt_nascimento": "1988-12-05", "num_telefone": "(44) 9999-0004", "dt_ultima_cesta": (datetime.now() - timedelta(days=20)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 30 },
+    { "seq_id": 5, "ds_nome": "Ricardo Pereira", "num_cpf": "555.666.777-88", "dt_nascimento": "2000-01-25", "num_telefone": "(44) 9999-0005", "dt_ultima_cesta": (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 7 },
+    { "seq_id": 6, "ds_nome": "Beatriz Lima", "num_cpf": "666.777.888-99", "dt_nascimento": "1995-06-14", "num_telefone": "(44) 9999-0006", "dt_ultima_cesta": (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 15 }
+]
 
 # --- Função Auxiliar ---
 def get_api_url():
@@ -35,29 +49,67 @@ def get_api_url():
 @pessoa_bp.route('/')
 @login_required
 def listar():
-    """Exibe a lista de todas as pessoas cadastradas, buscando da API."""
+    """Exibe a lista de todas as pessoas cadastradas e verifica atrasos nas cestas."""
     pessoas = []
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        api_url = f"{get_api_url()}pessoas"
-        print(f"--- [DEBUG] GET para: {api_url} ---")
-        response = requests.get(api_url, headers=headers, timeout=15)
+    pacientes_atrasados = []
+    hoje = datetime.now().date()
+    
+    if USAR_MOCK:
+        # ==========================================
+        # 1. LÓGICA DE TESTE (MOCK LOCAL)
+        # ==========================================
+        pessoas = MOCK_PESSOAS
+        for p in pessoas:
+            if p.get('dt_ultima_cesta') and p.get('num_frequencia_cesta'):
+                ultima_cesta = datetime.strptime(p['dt_ultima_cesta'], '%Y-%m-%d').date()
+                frequencia = int(p['num_frequencia_cesta'])
+                dias_passados = (hoje - ultima_cesta).days
+                
+                if dias_passados > frequencia:
+                    p['dias_atraso'] = dias_passados - frequencia
+                    pacientes_atrasados.append(p)
+    else:
+        # ==========================================
+        # 2. LÓGICA REAL (API ORACLE ORIGINAL)
+        # ==========================================
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            api_url = f"{get_api_url()}pessoas"
+            print(f"--- [DEBUG] GET para: {api_url} ---")
+            response = requests.get(api_url, headers=headers, timeout=15)
 
-        print(f"--- [DEBUG] GET Status Code: {response.status_code} ---")
-        response.raise_for_status()
-        data = response.json()
-        pessoas = data.get('items', [])
-        print(f"--- [DEBUG] GET Recebido {len(pessoas)} itens ---")
-    except requests.exceptions.Timeout:
-        print("\n--- [DEBUG] Erro: Timeout na requisição GET (listar) ---\n")
-        flash("Erro ao listar pacientes: A conexão demorou muito (Timeout).", 'danger')
-    except requests.exceptions.RequestException as e:
-        print(f"\n--- [DEBUG] Erro capturado na requisição GET (listar): {e} ---\n")
-        flash(f"Erro ao conectar com a API do Oracle: {e}", "danger")
+            print(f"--- [DEBUG] GET Status Code: {response.status_code} ---")
+            response.raise_for_status()
+            data = response.json()
+            pessoas = data.get('items', [])
+            print(f"--- [DEBUG] GET Recebido {len(pessoas)} itens ---")
+            
+            # Lógica de cálculo rodando nos dados reais do Oracle
+            for p in pessoas:
+                if p.get('dt_ultima_cesta') and p.get('num_frequencia_cesta'):
+                    try:
+                        # Pega os primeiros 10 caracteres (YYYY-MM-DD)
+                        data_str = p['dt_ultima_cesta'][:10] 
+                        ultima_cesta = datetime.strptime(data_str, '%Y-%m-%d').date()
+                        frequencia = int(p['num_frequencia_cesta'])
+                        dias_passados = (hoje - ultima_cesta).days
+                        
+                        if dias_passados > frequencia:
+                            p['dias_atraso'] = dias_passados - frequencia
+                            pacientes_atrasados.append(p)
+                    except Exception as e:
+                        print(f"Erro ao calcular cesta de {p.get('ds_nome')}: {e}")
 
-    return render_template('listar.html', pessoas=pessoas, titulo="Lista de Pacientes")
+        except requests.exceptions.Timeout:
+            print("\n--- [DEBUG] Erro: Timeout na requisição GET (listar) ---\n")
+            flash("Erro ao listar pacientes: A conexão demorou muito (Timeout).", 'danger')
+        except requests.exceptions.RequestException as e:
+            print(f"\n--- [DEBUG] Erro capturado na requisição GET (listar): {e} ---\n")
+            flash(f"Erro ao conectar com a API do Oracle: {e}", "danger")
+
+    return render_template('listar.html', pessoas=pessoas, pacientes_atrasados=pacientes_atrasados, titulo="Lista de Pacientes")
 
 
 @pessoa_bp.route('/novo', methods=['GET', 'POST'])
@@ -318,3 +370,13 @@ def novo_servico(id):
             flash(f"Erro ao registrar serviço: {e}", 'danger')
 
     return render_template('novo_servico.html', pessoa=pessoa, titulo="Registrar Novo Serviço")
+
+# ============================================================================
+# ROTA TEMPORÁRIA PARA O BOTÃO "ENTREGUE" ENQUANTO ESTIVER NO MOCK
+# ============================================================================
+@pessoa_bp.route('/renovar_cesta/<int:id>', methods=['POST'])
+@login_required
+def renovar_cesta(id):
+    """Rota apenas para teste visual do botão verde"""
+    flash(f"Cesta do paciente com ID {id} registrada como entregue (Modo Teste)!", "success")
+    return redirect(url_for('pessoa_bp.listar'))

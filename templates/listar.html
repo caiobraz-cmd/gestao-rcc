@@ -1,6 +1,55 @@
 {% extends "base.html" %}
 
 {% block conteudo %}
+{% if pacientes_atrasados %}
+<style>
+    @keyframes pulso-alerta {
+        0% { box-shadow: 0 0 0px rgba(255, 69, 58, 0); border-left: 4px solid #ffb3b3; }
+        50% { box-shadow: 0 0 10px rgba(255, 69, 58, 0.3); border-left: 4px solid #ff453a; }
+        100% { box-shadow: 0 0 0px rgba(255, 69, 58, 0); border-left: 4px solid #ffb3b3; }
+    }
+    .caixa-atrasos {
+        background-color: #fff9f9;
+        border: 1px solid #ffcccc;
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    .item-atrasado {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        padding: 12px 18px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        animation: pulso-alerta 2.5s infinite ease-in-out; 
+    }
+    .info-paciente h4 { margin: 0; color: var(--text-main); }
+    .info-paciente p { margin: 0; color: var(--danger); font-size: 0.9em; font-weight: 600; }
+</style>
+
+<div class="caixa-atrasos">
+    <h3 style="color: var(--danger); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Cestas Básicas em Atraso
+    </h3>
+    
+    {% for paciente in pacientes_atrasados %}
+    <div class="item-atrasado">
+        <div class="info-paciente">
+            <h4>{{ paciente.ds_nome }}</h4>
+            <p>Atrasado há {{ paciente.dias_atraso }} dias (Frequência: {{ paciente.num_frequencia_cesta }} dias)</p>
+        </div>
+        <div class="acoes">
+            <form action="{{ url_for('pessoa_bp.renovar_cesta', id=paciente.seq_id) }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-primary" style="background-color: var(--success);"><i class="fa-solid fa-check"></i> Entregue Hoje</button>
+            </form>
+            <button class="btn btn-danger" onclick="alert('Funcionalidade de pendência em breve.')"><i class="fa-solid fa-xmark"></i> Pendência</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
     <div class="header-action">
         <h1>Pessoas Cadastradas</h1>
         <a href="{{ url_for('pessoa_bp.novo') }}" class="btn btn-primary">
