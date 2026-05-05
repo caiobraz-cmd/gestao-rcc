@@ -13,7 +13,75 @@ Sistema web para gerenciamento de informações de pacientes, incluindo:
 ## 🏗️ Arquitetura do Projeto
 
 ```
+gestao-rcc/# Gestão RCC
+
+Sistema web para apoio à gestão de pacientes e serviços da Rede de Combate ao Câncer.
+
+## Integrantes
+
+- Caio Braz
+- Osvaldo Mazoni Neto
+
+## Objetivo do projeto
+
+O objetivo do projeto Gestão RCC é dar continuidade a um sistema iniciado anteriormente, organizando sua documentação, fluxo de trabalho, versionamento e planejamento de evolução até a versão 1.0.
+
+O sistema busca auxiliar a Rede de Combate ao Câncer no cadastro de pacientes, acompanhamento de informações importantes, registro de serviços prestados e controle de benefícios, como entrega de cesta básica.
+
+## Contexto do projeto
+
+Este projeto foi iniciado em um período anterior e será continuado nesta disciplina como uma simulação de experiência real de mercado.
+
+Neste primeiro bimestre, o objetivo não é entregar o sistema finalizado, mas comprovar que o projeto possui:
+
+- repositório organizado;
+- documentação mínima;
+- planejamento inicial;
+- backlog e roadmap;
+- fluxo de trabalho definido;
+- evidências reais de uso de Git e GitHub;
+- participação real ou simulada de mais de um colaborador.
+
+## Tecnologias previstas
+
+- Python
+- Flask
+- Jinja2
+- HTML
+- CSS
+- Bootstrap
+- Oracle ORDS / API REST
+- Git
+- GitHub
+
+## Estado atual do projeto
+
+O projeto já possui uma base inicial em Flask, contendo:
+
+- estrutura principal da aplicação;
+- rotas para pacientes;
+- telas HTML com templates Jinja2;
+- arquivos estáticos;
+- autenticação inicial;
+- integração planejada com API Oracle ORDS;
+- lógica inicial de controle de cestas em modo de teste.
+
+Durante a disciplina, o projeto será revisado, organizado e evoluído até uma versão 1.0 funcional.
+
+## Estrutura principal
+
+```txt
 gestao-rcc/
+│
+├── app/                  # Código principal da aplicação Flask
+├── templates/            # Templates HTML
+├── static/               # Arquivos CSS e estáticos
+├── docs/                 # Documentação do projeto
+├── src/                  # Referência exigida na avaliação
+├── config.py             # Configurações da aplicação
+├── run.py                # Arquivo de execução local
+├── requirements.txt      # Dependências do projeto
+└── README.md             # Página inicial do projeto
 │
 ├── app/                          # Pacote principal da aplicação
 │   ├── __init__.py              # Application Factory (create_app)
