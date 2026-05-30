@@ -13,7 +13,7 @@
 | ID da Issue | Título da Tarefa | Responsável | Status Inicial |
 | :--- | :--- | :--- | :--- |
 | #X | [Descrição da tarefa] | [Nome] | A Fazer / To Do |
-
+ 
 ## 🛡️ 3. Governança e Critérios
 * **Critérios de Pronto (Definition of Done)**: [Critérios de qualidade mínimos para considerar a tarefa concluída][cite: 2]
 * **Riscos Identificados**: [Fatores internos ou externos que podem atrasar a entrega][cite: 2]
