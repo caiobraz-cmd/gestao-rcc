@@ -1,21 +1,6 @@
-# Sistema de Gestão RCC
+# Gestão RCC
 
-Sistema de gestão de pacientes da Rede de Combate ao Câncer, desenvolvido com Flask e integração com API Oracle ORDS.
-
-## 📋 Descrição
-
-Sistema web para gerenciamento de informações de pacientes, incluindo:
-- Cadastro completo de pacientes
-- Histórico médico e tratamentos
-- Registro de serviços prestados
-- Integração com banco de dados Oracle via API REST (ORDS)
-
-## 🏗️ Arquitetura do Projeto
-
-```
-gestao-rcc/# Gestão RCC
-
-Sistema web para apoio à gestão de pacientes e serviços da Rede de Combate ao Câncer.
+Sistema web para apoio à gestão de pacientes, serviços e benefícios da Rede de Combate ao Câncer.
 
 ## Integrantes
 
@@ -24,25 +9,17 @@ Sistema web para apoio à gestão de pacientes e serviços da Rede de Combate ao
 
 ## Objetivo do projeto
 
-O objetivo do projeto Gestão RCC é dar continuidade a um sistema iniciado anteriormente, organizando sua documentação, fluxo de trabalho, versionamento e planejamento de evolução até a versão 1.0.
+O objetivo do Gestão RCC é dar continuidade a um sistema iniciado anteriormente, organizando sua documentação, fluxo de trabalho, versionamento e evolução até uma versão 1.0 funcional.
 
-O sistema busca auxiliar a Rede de Combate ao Câncer no cadastro de pacientes, acompanhamento de informações importantes, registro de serviços prestados e controle de benefícios, como entrega de cesta básica.
+O sistema busca auxiliar a Rede de Combate ao Câncer no cadastro de pacientes, acompanhamento de informações importantes, registro de serviços prestados e controle de benefícios, como entrega de cestas básicas.
 
-## Contexto do projeto
+## Contexto da disciplina
 
-Este projeto foi iniciado em um período anterior e será continuado nesta disciplina como uma simulação de experiência real de mercado.
+Nesta disciplina, a equipe deve simular uma experiência real de mercado, aplicando gestão de projetos, versionamento, documentação de processos e execução de sprints semanais.
 
-Neste primeiro bimestre, o objetivo não é entregar o sistema finalizado, mas comprovar que o projeto possui:
+A Sprint 1 tem como foco comprovar que a equipe possui um fluxo funcional de trabalho, com issues, branches, commits, Pull Requests, revisões, documentação e evidências reais de execução.
 
-- repositório organizado;
-- documentação mínima;
-- planejamento inicial;
-- backlog e roadmap;
-- fluxo de trabalho definido;
-- evidências reais de uso de Git e GitHub;
-- participação real ou simulada de mais de um colaborador.
-
-## Tecnologias previstas
+## Tecnologias utilizadas
 
 - Python
 - Flask
@@ -53,6 +30,7 @@ Neste primeiro bimestre, o objetivo não é entregar o sistema finalizado, mas c
 - Oracle ORDS / API REST
 - Git
 - GitHub
+- Markdown
 
 ## Estado atual do projeto
 
@@ -66,218 +44,174 @@ O projeto já possui uma base inicial em Flask, contendo:
 - integração planejada com API Oracle ORDS;
 - lógica inicial de controle de cestas em modo de teste.
 
-Durante a disciplina, o projeto será revisado, organizado e evoluído até uma versão 1.0 funcional.
+## Entrega — Sprint 1
 
-## Estrutura principal
+A Sprint 1 foi planejada para estruturar e comprovar o fluxo de trabalho da equipe.
+
+### Documentação da Sprint 1
+
+- [Workflow funcional da equipe](docs/workflow.md)
+- [Ambiente de desenvolvimento](docs/development-environment.md)
+- [Referências bibliográficas](docs/references.md)
+
+### POPs
+
+- [POP — Desenvolvedor: criar branch](docs/pops/desenvolvedor-criar-branch.md)
+- [POP — Desenvolvedor: abrir Pull Request](docs/pops/desenvolvedor-abrir-pull-request.md)
+- [POP — Documentador: atualizar documentação](docs/pops/documentador-atualizar-documentacao.md)
+- [POP — Documentador: registrar evidências](docs/pops/documentador-registrar-evidencias.md)
+
+### Sprint
+
+- [Template de Sprint](docs/sprints/sprint_template.md)
+- [Registro da Sprint 1](docs/sprints/sprint01.md)
+
+### Evidências
+
+- [Evidências da Sprint 1](docs/evidences/sprint-01/)
+
+## Estrutura do repositório
 
 ```txt
 gestao-rcc/
-│
-├── app/                  # Código principal da aplicação Flask
-├── templates/            # Templates HTML
-├── static/               # Arquivos CSS e estáticos
-├── docs/                 # Documentação do projeto
-├── src/                  # Referência exigida na avaliação
-├── config.py             # Configurações da aplicação
-├── run.py                # Arquivo de execução local
-├── requirements.txt      # Dependências do projeto
-└── README.md             # Página inicial do projeto
-│
-├── app/                          # Pacote principal da aplicação
-│   ├── __init__.py              # Application Factory (create_app)
-│   ├── models/                  # Modelos de dados
-│   │   ├── __init__.py
-│   │   └── pessoa.py           # Modelo Pessoa
-│   └── routes/                  # Blueprints e rotas
-│       ├── __init__.py
-│       └── pessoa_routes.py    # Rotas CRUD de Pessoas
-│
-├── templates/                   # Templates Jinja2
-│   ├── base.html               # Template base
-│   ├── listar.html             # Lista de pacientes
-│   ├── novo.html               # Cadastro de paciente
-│   ├── editar.html             # Edição de paciente
-│   ├── detalhes.html           # Detalhes e serviços
-│   └── novo_servico.html       # Cadastro de serviço
-│
-├── static/                      # Arquivos estáticos
-│   └── style.css               # Estilos CSS
-│
-├── BKP/                         # Backup da versão anterior
-│
+├── app/                         # Código principal da aplicação Flask
+├── templates/                   # Templates HTML/Jinja2
+├── static/                      # Arquivos CSS e estáticos
+├── docs/                        # Documentação do projeto
+│   ├── planning/                # Planejamento geral
+│   ├── workflow/                # Documentos do primeiro bimestre
+│   ├── pops/                    # Procedimentos Operacionais Padrão
+│   ├── sprints/                 # Template e registros de sprint
+│   └── evidences/               # Evidências da execução
+├── src/                         # Referência estrutural exigida
 ├── config.py                    # Configurações da aplicação
-├── run.py                       # Ponto de entrada (development)
+├── run.py                       # Execução local
 ├── requirements.txt             # Dependências Python
-├── .env                         # Variáveis de ambiente (não versionar)
-├── .gitignore                   # Arquivos ignorados pelo Git
-└── README.md                    # Este arquivo
-
+├── .env.example                 # Exemplo de variáveis de ambiente
+└── README.md
 ```
 
-## 🚀 Tecnologias Utilizadas
+## Como executar localmente
 
-- **Flask 3.0.0** - Framework web
-- **Python 3.8+** - Linguagem de programação
-- **Oracle ORDS** - API REST para banco de dados Oracle
-- **Requests** - Cliente HTTP para consumo de API
-- **Jinja2** - Engine de templates
-- **python-dotenv** - Gerenciamento de variáveis de ambiente
-
-## 📦 Instalação
-
-### 1. Clone o repositório
+### 1. Clonar o repositório
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/caiobraz-cmd/gestao-rcc.git
 cd gestao-rcc
 ```
 
-### 2. Crie um ambiente virtual
+### 2. Criar ambiente virtual
+
+No Windows PowerShell:
 
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-### 3. Instale as dependências
+### 3. Instalar dependências
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-### 4. Configure as variáveis de ambiente
+### 4. Configurar variáveis de ambiente
 
-Edite o arquivo `.env` com suas configurações:
+Criar um arquivo `.env` com base no `.env.example`:
 
 ```env
-API_BASE_URL="https://seu-servidor-ords.com/ords/schema/"
-SECRET_KEY="sua-chave-secreta-aqui"
-FLASK_ENV="development"
+API_BASE_URL=
+SECRET_KEY=
+FLASK_ENV=development
 ITEMS_PER_PAGE=20
 ```
 
-## ▶️ Executando o Projeto
+O arquivo `.env` não deve ser enviado ao GitHub.
 
-### Modo Desenvolvimento
+### 5. Executar o projeto
 
 ```powershell
 python run.py
 ```
 
-O servidor estará disponível em: `http://localhost:5000`
+A aplicação ficará disponível em:
 
-### Modo Produção
-
-Para produção, use um servidor WSGI como Gunicorn:
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app()"
+```txt
+http://localhost:5000
 ```
 
-## 🧪 Testando a API
+### 6. Testar o servidor
 
-Você pode testar a conexão com a API acessando:
+Acessar:
 
-```
+```txt
 http://localhost:5000/ping
 ```
 
-Deve retornar: `Pong! O servidor Flask está no ar.`
+Resultado esperado:
 
-## 📚 Estrutura de Rotas
-
-### Pessoas (Pacientes)
-
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/` | Lista todas as pessoas |
-| GET | `/novo` | Exibe formulário de cadastro |
-| POST | `/novo` | Cria nova pessoa |
-| GET | `/editar/<id>` | Exibe formulário de edição |
-| POST | `/editar/<id>` | Atualiza pessoa |
-| POST | `/deletar/<id>` | Remove pessoa |
-| GET | `/pessoa/<id>/` | Detalhes e histórico |
-
-### Serviços
-
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/pessoa/<id>/servicos/novo` | Formulário novo serviço |
-| POST | `/pessoa/<id>/servicos/novo` | Cria novo serviço |
-
-## 🗃️ Estrutura da API (Oracle ORDS)
-
-### Tabela PESSOAS
-
-```sql
-- seq_id (PK)
-- ds_nome
-- num_cpf
-- dt_nascimento
-- num_telefone
-- char_endereco
-- char_diagnostico
-- char_tratamento
-- char_medicamento
-- char_alergia
-- char_observacoes
-- data_obito
+```txt
+Pong! O servidor Flask está no ar.
 ```
 
-### Tabela SERVICOS
+## Workflow da equipe
 
-```sql
-- seq_id (PK)
-- ds_nome
-- char_descricao
-- dt_dataservico
-- sq_idpaciente (FK)
-```
+A equipe utiliza uma adaptação simples do GitHub Flow:
 
-## 🔒 Segurança
+1. Criar uma issue para cada tarefa.
+2. Criar uma branch a partir da `main`.
+3. Fazer as alterações necessárias.
+4. Realizar commits com mensagens compreensíveis.
+5. Abrir Pull Request.
+6. Solicitar revisão de outro integrante.
+7. Fazer merge após revisão.
+8. Registrar evidências.
 
-- Nunca commite o arquivo `.env` no Git
-- Use variáveis de ambiente para dados sensíveis
-- Em produção, use uma `SECRET_KEY` forte e única
-- Configure HTTPS em produção
+## Divisão de papéis
 
-## 🐛 Tratamento de Erros
+### Caio Braz
 
-O sistema implementa tratamento robusto de erros:
-- Timeout em requisições (10-15s)
-- Validação de status HTTP
-- Mensagens flash informativas
-- Logs de debug detalhados
+Função: Desenvolvedor / responsável técnico.
 
-## 📝 Padrões de Código
+Responsabilidades:
 
-O projeto segue:
-- **Application Factory Pattern** - Criação modular da aplicação
-- **Blueprints** - Organização de rotas
-- **PEP 8** - Estilo de código Python
-- **Docstrings** - Documentação de funções
+- documentação do workflow;
+- documentação do ambiente de desenvolvimento;
+- criação dos POPs da função Desenvolvedor;
+- validação da execução local do sistema;
+- abertura e revisão de Pull Requests.
 
-## 🤝 Contribuindo
+### Osvaldo Mazoni Neto
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+Função: Documentador / apoio de processos.
 
-## 📄 Licença
+Responsabilidades:
 
-Este projeto é privado e pertence à Rede de Combate ao Câncer.
+- criação dos POPs da função Documentador;
+- registro da Sprint 1;
+- organização das evidências;
+- apoio na documentação do processo;
+- revisão de Pull Requests.
 
-## 👥 Autores
+## Planejamento do projeto
 
-- Desenvolvedor Principal - Gestão RCC Team
+- [Visão do Projeto](docs/planning/project-vision.md)
+- [Backlog](docs/planning/backlog.md)
+- [Roadmap](docs/planning/roadmap.md)
 
-## 📞 Suporte
+## Versão atual
 
-Para suporte, entre em contato através do email: suporte@rcc.org.br
+Versão acadêmica atual: `0.3`
 
----
+A versão `1.0` deverá ser preparada até o final do terceiro bimestre.
 
-**Rede de Combate ao Câncer** © 2025
+## Segurança
+
+- O arquivo `.env` não deve ser versionado.
+- Dados sensíveis devem ser armazenados em variáveis de ambiente.
+- A branch `main` deve representar uma versão estável.
+- Alterações devem ser feitas por branch e Pull Request.
+
+## Licença
+
+Projeto acadêmico desenvolvido para fins educacionais.
