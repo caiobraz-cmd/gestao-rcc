@@ -9,4 +9,4 @@ Além deste arquivo, a equipe também produziu uma versão física do Kanban, fe
 Evidência física:
 
 ```txt
-docs/evidences/physical/KANBAN.jpg
+docs/evidences/physical/KANBAN.jpeg

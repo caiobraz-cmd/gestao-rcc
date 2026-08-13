@@ -2,170 +2,140 @@
 
 ## Objetivo do roadmap
 
-Este roadmap apresenta a evolução planejada do sistema Gestão RCC até a versão 1.0, prevista para o final do terceiro bimestre.
+Este roadmap registra somente os itens que a equipe decidiu executar ate o final do terceiro bimestre para preparar a versao `1.0` funcional, organizada, testada e documentada do Sistema de Gestao RCC.
 
-A equipe adotará uma numeração inspirada no versionamento semântico, usando versões `0.x` durante o desenvolvimento e `1.0` para a primeira versão funcional, testada e organizada.
+O roadmap e um subconjunto do backlog. Ideias futuras, possibilidades de longo prazo e itens sem compromisso atual permanecem apenas em `docs/planning/backlog.md`.
 
----
+## Contexto de rastreabilidade
 
-# Linha do tempo do projeto
-
-## Versão 0.1 — Base inicial do projeto
-
-### Situação
-
-Projeto iniciado anteriormente e utilizado como base para continuidade nesta disciplina.
-
-### Entregas já existentes
-
-- Estrutura inicial em Flask.
-- Rotas principais de pacientes.
-- Templates HTML.
-- Arquivos estáticos.
-- Configuração inicial do projeto.
-- Integração planejada com Oracle ORDS/API REST.
-- Autenticação inicial.
-- Controle inicial de cesta básica em modo de teste.
+O desenvolvimento anterior foi reconstruido retrospectivamente em `docs/sprints/historico/`, a partir do codigo-fonte, documentacao disponivel e historico Git. Esses registros historicos explicam o estado herdado do sistema, mas nao substituem evidencias formais de Issues, Pull Requests ou reunioes.
 
 ---
 
-## Versão 0.2 — Primeiro bimestre
+# Estado herdado antes da execucao atual
 
-### Objetivo
+O sistema ja possui uma base inicial com:
 
-Organizar o projeto, documentar o planejamento e comprovar o uso de Git/GitHub.
-
-### Entregas previstas
-
-- Organizar a estrutura do repositório.
-- Atualizar o README.
-- Criar documentação de visão do projeto.
-- Criar backlog inicial.
-- Criar roadmap.
-- Documentar separação entre desenvolvimento e produção.
-- Documentar organização da equipe.
-- Criar Kanban.
-- Criar Gantt.
-- Registrar evidências reais de uso de Git/GitHub.
-- Simular ou registrar participação de segundo colaborador.
-- Produzir Kanban físico e Gantt físico.
-- Gerar arquivo `.zip` contendo o repositório com a pasta `.git`.
-
-### Resultado esperado
-
-Ao final do primeiro bimestre, o projeto deverá estar organizado e pronto para continuidade nos próximos ciclos de desenvolvimento.
+- aplicacao Flask organizada com Application Factory e Blueprints;
+- templates Jinja2 e arquivos estaticos;
+- CRUD de pacientes via Oracle ORDS/API REST;
+- cadastro e consulta basica de servicos vinculados a pacientes;
+- tela de detalhes do paciente com historico de servicos;
+- autenticacao inicial em modo mock, com sessao e protecao parcial de rotas;
+- controle inicial de cesta basica em modo mock, sem persistencia real da entrega;
+- documentacao inicial de planejamento, workflow, POPs, Sprints e evidencias.
 
 ---
 
-## Versão 0.5 — Segundo bimestre
+# Execucao comprometida ate a versao 1.0
 
-### Objetivo
+## 1. Autenticacao e seguranca
 
-Evoluir as funcionalidades principais do sistema e corrigir pontos técnicos da base existente.
+- [ ] Substituir autenticacao mockada por solucao definitiva.
+- [ ] Integrar usuario com base/API, conforme arquitetura adotada.
+- [ ] Proteger todas as rotas internas.
+- [ ] Revisar sessao.
+- [ ] Revisar tratamento de dados sensiveis.
+- [ ] Criar `.env.example` seguro, sem credenciais reais.
 
-### Entregas previstas
+## 2. Gestao de pacientes
 
-- Revisar cadastro de pacientes.
-- Melhorar validações dos formulários.
-- Melhorar listagem de pacientes.
-- Criar busca simples por paciente.
-- Melhorar tela de detalhes.
-- Melhorar registro de serviços.
-- Revisar controle de cesta básica.
-- Remover dependência de dados mockados nas funcionalidades principais.
-- Melhorar layout das telas.
-- Documentar instruções de execução local.
+- [ ] Revisar CRUD de pacientes.
+- [ ] Melhorar validacao dos formularios.
+- [ ] Adicionar busca por nome ou CPF.
+- [ ] Revisar fluxo de exclusao.
+- [ ] Padronizar mensagens de erro e sucesso.
 
-### Resultado esperado
+## 3. Servicos
 
-Ao final do segundo bimestre, o sistema deverá estar mais estável, com as principais telas revisadas e com as funcionalidades centrais mais próximas da versão final.
+- [ ] Revisar cadastro de servicos.
+- [ ] Melhorar historico exibido no paciente.
+- [ ] Validar vinculo paciente-servico.
 
----
+## 4. Cesta basica
 
-## Versão 0.8 — Início do terceiro bimestre
+- [ ] Substituir comportamento exclusivamente mock por integracao real.
+- [ ] Persistir entrega da cesta.
+- [ ] Registrar ultima entrega.
+- [ ] Registrar frequencia.
+- [ ] Calcular proxima entrega.
+- [ ] Identificar atrasos utilizando dados reais.
 
-### Objetivo
+## 5. Interface e usabilidade
 
-Preparar o sistema para a versão 1.0.
+- [ ] Padronizar telas.
+- [ ] Melhorar navegacao.
+- [ ] Melhorar responsividade.
+- [ ] Revisar UX das principais operacoes.
 
-### Entregas previstas
+## 6. Qualidade
 
-- Finalizar controle básico de cesta básica.
-- Revisar autenticação.
-- Proteger rotas internas.
-- Corrigir erros identificados nos testes.
-- Revisar arquivos sensíveis.
-- Revisar documentação.
-- Realizar testes manuais das funcionalidades principais.
-- Ajustar interface para apresentação final.
+- [ ] Executar testes manuais dos principais fluxos.
+- [ ] Registrar problemas encontrados.
+- [ ] Corrigir falhas criticas.
+- [ ] Preparar versao estavel.
 
-### Resultado esperado
+## 7. Documentacao
 
-Ao final da versão 0.8, o sistema deverá estar em fase de estabilização, com poucas pendências para a versão 1.0.
-
----
-
-## Versão 1.0 — Final do terceiro bimestre
-
-### Objetivo
-
-Entregar a primeira versão funcional, organizada e testada do sistema Gestão RCC.
-
-### Funcionalidades esperadas
-
-- Login funcional.
-- Cadastro de pacientes.
-- Listagem de pacientes.
-- Edição de pacientes.
-- Tela de detalhes do paciente.
-- Registro de serviços prestados.
-- Histórico básico de serviços.
-- Controle básico de cesta básica.
-- Interface organizada.
-- Documentação atualizada.
-
-### Critérios para considerar a versão 1.0 pronta
-
-- O sistema executa localmente sem erros críticos.
-- As principais telas estão acessíveis.
-- O fluxo de pacientes funciona.
-- O fluxo de serviços funciona de forma básica.
-- O controle de cesta básica possui funcionamento mínimo.
-- O repositório está organizado.
-- A documentação está atualizada.
-- As instruções de execução estão claras.
+- [ ] Manter backlog atualizado.
+- [ ] Manter roadmap atualizado.
+- [ ] Manter CHANGELOG atualizado.
+- [ ] Registrar Sprints.
+- [ ] Atualizar README.
+- [ ] Registrar evidencias necessarias.
 
 ---
 
-# Roadmap visual simplificado
+# Criterios para considerar a versao 1.0 pronta
 
-| Período | Versão | Foco principal | Entregas |
-|---|---|---|---|
-| Base anterior | 0.1 | Projeto inicial | Estrutura Flask, rotas, templates e API planejada |
-| 1º bimestre | 0.2 | Organização e documentação | README, backlog, roadmap, workflow e evidências Git |
-| 2º bimestre | 0.5 | Evolução funcional | Cadastro, listagem, serviços e melhorias visuais |
-| Início do 3º bimestre | 0.8 | Estabilização | Testes, correções, autenticação e cesta básica |
-| Final do 3º bimestre | 1.0 | Entrega final | Sistema funcional, testado e documentado |
+- O sistema executa localmente sem erros criticos.
+- As rotas internas estao protegidas conforme o fluxo de autenticacao definido.
+- O fluxo de pacientes funciona para cadastro, listagem, edicao, detalhes e exclusao revisada.
+- O fluxo de servicos funciona de forma basica e vinculada ao paciente correto.
+- O controle de cesta basica usa dados reais para entrega, frequencia, proxima previsao e atraso.
+- As mensagens de sucesso e erro estao padronizadas nos principais fluxos.
+- As principais telas estao organizadas e utilizaveis.
+- A documentacao essencial esta atualizada.
+- O README orienta a execucao local e aponta para backlog, roadmap, changelog e Sprints.
 
 ---
 
-# Possíveis versões futuras
+# Itens deliberadamente fora deste roadmap
 
-Após a versão 1.0, o projeto poderá evoluir para:
+Os itens abaixo permanecem no backlog, mas nao fazem parte do compromisso atual ate a versao 1.0:
 
-## Versão 1.1
+- aplicativo mobile;
+- integracao com WhatsApp;
+- modulo financeiro;
+- gestao de voluntarios;
+- dashboard avancado;
+- relatorios complexos;
+- automacoes externas;
+- estoque completo;
+- notificacoes avancadas.
 
-- Relatórios simples.
-- Filtros avançados.
-- Melhorias de interface.
+---
 
-## Versão 1.2
+# Fluxo documental adotado
 
-- Dashboard com indicadores.
-- Histórico detalhado de entregas e serviços.
-
-## Versão 2.0
-
-- Controle avançado de usuários.
-- Integrações externas.
-- Aplicativo mobile ou versão responsiva mais completa.
+```text
+IDEIA
+|
+v
+BACKLOG
+|
+v
+DECISAO DE IMPLEMENTAR
+|
+v
+ROADMAP / SPRINT
+|
+v
+DESENVOLVIMENTO
+|
+v
+CONCLUIDO
+|
+v
+CHANGELOG
+```
