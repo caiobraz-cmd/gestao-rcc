@@ -9,4 +9,4 @@ Além deste arquivo, a equipe também produziu uma versão física do Gantt, fei
 Evidência física:
 
 ```txt
-docs/evidences/physical/GANTT.jpg
+docs/evidences/physical/GANTT.jpeg

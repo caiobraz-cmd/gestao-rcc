@@ -63,12 +63,14 @@ A Sprint 1 foi planejada para estruturar e comprovar o fluxo de trabalho da equi
 
 ### Sprint
 
-- [Template de Sprint](docs/sprints/sprint_template.md)
-- [Registro da Sprint 1](docs/sprints/sprint01.md)
+- [Índice de Sprints](docs/sprints/README.md)
+- [Sprints históricas reconstruídas](docs/sprints/historico/README.md)
+- [Template de Sprint](docs/sprints/sprint-template.md)
+- [Registro da Sprint 1](docs/sprints/sprint-01.md)
 
 ### Evidências
 
-- [Evidências da Sprint 1](docs/evidences/sprint-01/)
+- [Evidências de versionamento](docs/evidences/version-control/README.md)
 
 ## Estrutura do repositório
 
@@ -198,6 +200,8 @@ Responsabilidades:
 - [Visão do Projeto](docs/planning/project-vision.md)
 - [Backlog](docs/planning/backlog.md)
 - [Roadmap](docs/planning/roadmap.md)
+- [Changelog](CHANGELOG.md)
+- [Sprints](docs/sprints/README.md)
 
 ## Versão atual
 
