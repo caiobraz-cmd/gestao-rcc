@@ -1,0 +1,56 @@
+{
+  "versao": "0.4.0-rc1",
+  "inicio_utc": "2026-09-27T05:06:08.389273+00:00",
+  "tipo": "Fluxos Flask com chamadas reais ao Oracle ORDS, sem simulação",
+  "etapas": [
+    {
+      "etapa": "Login do operador",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Listagem real",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "CPF inválido rejeitado sem novo registro",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Cadastro confirmado por nova consulta",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Detalhes do registro real",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Edição confirmada por nova consulta",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Inativação confirmada por nova consulta",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Saída do sistema",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Proteção após saída",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Nova sessão",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Persistência após nova sessão",
+      "resultado": "OK"
+    }
+  ],
+  "concluido": true,
+  "registro_teste_id": 21,
+  "registro_teste_nome": "TESTE ENTREGA 20260927050609 6f2d",
+  "fim_utc": "2026-09-27T05:06:20.133832+00:00",
+  "observacao": "Não comprova apresentação ao cliente. Registro criado permanece identificado como TESTE; não há exclusão automática."
+}

@@ -38,3 +38,7 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+
+# Pacotes gerados localmente
+entrega/*.zip
+entrega/*.sha256.txt

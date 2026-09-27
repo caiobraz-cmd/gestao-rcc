@@ -16,6 +16,7 @@
 }
 
 /* Reset e Tipografia */
+*, *::before, *::after { box-sizing: border-box; }
 body { 
     font-family: 'Inter', sans-serif; 
     margin: 0; 
@@ -160,7 +161,8 @@ tr:hover td { background-color: #f1f5f9; }
 .form-group label { margin-bottom: 0.4rem; font-weight: 500; color: var(--text-main); font-size: 0.9rem; }
 
 .form-group input, 
-.form-group textarea { 
+.form-group textarea,
+.form-group select {
     padding: 0.8rem; 
     border: 1px solid var(--border-color); 
     border-radius: 6px; 
@@ -171,7 +173,8 @@ tr:hover td { background-color: #f1f5f9; }
 }
 
 .form-group input:focus, 
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--primary-blue);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
@@ -231,4 +234,13 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     width: 100%;
     max-width: 400px;
     display: block; /* Sobrescreve o grid do form-card padrão */
+}
+
+@media (max-width: 720px) {
+    header { padding: 1rem; }
+    nav, nav ul { flex-wrap: wrap; gap: 1rem; }
+    .container { padding: 1rem; overflow-x: auto; }
+    .form-card { grid-template-columns: 1fr; }
+    .header-action { flex-wrap: wrap; gap: 1rem; }
+    .login-box { padding: 1.5rem; }
 }

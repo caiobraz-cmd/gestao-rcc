@@ -1,66 +1,33 @@
-"""
-Arquivo de Configuração da Aplicação Flask.
+"""Configuração por ambiente, sem credenciais embutidas."""
+import os
+from datetime import timedelta
+from pathlib import Path
+from dotenv import load_dotenv
 
-Este módulo centraliza todas as configurações, separando-as por ambientes
-(Desenvolvimento, Teste, Produção) e garantindo a portabilidade do projeto
-através da criação dinâmica de caminhos.
-"""
+load_dotenv(Path(__file__).resolve().parent / '.env', override=False)
 
-import os 
-from urllib.parse import quote_plus
-
-# --- Configuração de Caminhos Dinâmicos ---
-
-# 'basedir' calcula o caminho absoluto para o diretório raiz do projeto.
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-# --- Carregamento de Variáveis de Ambiente (.env) ---
-
-# Em ambientes de não-produção, tenta carregar variáveis de um arquivo .env
-# para facilitar o desenvolvimento local.
-if os.environ.get("FLASK_ENV") != "production":
-    try: 
-        from dotenv import load_dotenv
-        load_dotenv()
-    except Exception: 
-        pass
-
-
-# --- Classes de Configuração ---
-
-class BaseConfig: 
-    """Configurações base que se aplicam a todos os ambientes."""
-
-    #: Chave secreta para segurança de sessões e cookies.
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
-
-    #: URL base da API do Oracle (ORDS) de onde os dados serão consumidos.
-    #: Lida a partir da variável de ambiente API_BASE_URL.
-    API_BASE_URL = os.environ.get("API_BASE_URL")
-    
-    #: Configurações padrão para DEBUG e TESTING.
+class BaseConfig:
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    API_BASE_URL = os.environ.get('API_BASE_URL', '').strip()
+    API_TOKEN = os.environ.get('API_TOKEN', '').strip()
+    ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', '').strip()
+    ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', '').strip()
+    APP_VERSION = '0.4.0-rc1'
     DEBUG = False
     TESTING = False
-    ITEMS_PER_PAGE = int(os.environ.get("ITEMS_PER_PAGE", 20))
-
+    MAX_CONTENT_LENGTH = 1024 * 1024
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+    ORDS_CESTAS_HABILITADAS = os.environ.get('ORDS_CESTAS_HABILITADAS', 'false').lower() == 'true'
+    ORDS_SERVICOS_HABILITADOS = os.environ.get('ORDS_SERVICOS_HABILITADOS', 'false').lower() == 'true'
+    ORDS_DADOS_MEDICOS_HABILITADOS = False
 
 class DevelopmentConfig(BaseConfig):
-    """Configurações para o ambiente de desenvolvimento."""
-    DEBUG = True
+    pass
 
-
-class TestingConfig(BaseConfig): 
-    """Configurações para o ambiente de testes automatizados."""
+class TestingConfig(BaseConfig):
     TESTING = True
-    WTF_CSRF_ENABLED = False
-
 
 class ProductionConfig(BaseConfig):
-    """Configurações para o ambiente de produção."""
-    DEBUG = False
-
-    @classmethod
-    def check_env(cls):
-        """Verifica se variáveis críticas estão definidas em produção."""
-        if not os.environ.get("API_BASE_URL"):
-            raise RuntimeError("API_BASE_URL não está definida em ProductionConfig")
+    SESSION_COOKIE_SECURE = True

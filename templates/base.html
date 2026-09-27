@@ -25,7 +25,10 @@
                 <li><span style="color: var(--text-muted); margin-right: 15px;">Olá, {{ session.get('usuario_nome') }}</span></li>
                 <li><a href="{{ url_for('pessoa_bp.listar') }}"><i class="fa-solid fa-users"></i> Pacientes</a></li>
                 <li><a href="{{ url_for('pessoa_bp.novo') }}" class="nav-btn"><i class="fa-solid fa-plus"></i> Novo Cadastro</a></li>
-                <li><a href="{{ url_for('auth_bp.logout') }}" style="color: var(--danger);"><i class="fa-solid fa-power-off"></i> Sair</a></li>
+                <li><form action="{{ url_for('auth_bp.logout') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-secondary" type="submit">Sair</button>
+                </form></li>
             </ul>
             {% endif %}
         </nav>
@@ -47,7 +50,7 @@
         {% block conteudo %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2026 - Rede de Combate ao Câncer | Sistema de Gestão</p>
+        <p>&copy; 2026 - Rede de Combate ao Câncer | Gestão RCC {{ config.APP_VERSION }}</p>
     </footer>
 </body>
 </html>

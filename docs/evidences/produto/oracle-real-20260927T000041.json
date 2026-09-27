@@ -1,0 +1,19 @@
+{
+  "versao": "0.4.0-rc1",
+  "inicio_utc": "2026-09-27T00:00:40.873029+00:00",
+  "tipo": "Fluxos Flask com chamadas reais ao Oracle ORDS, sem simulação",
+  "etapas": [
+    {
+      "etapa": "Login do operador",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Listagem real",
+      "resultado": "FALHOU"
+    }
+  ],
+  "concluido": false,
+  "erro": "Validação interrompida: Listagem real",
+  "fim_utc": "2026-09-27T00:00:41.602690+00:00",
+  "observacao": "Não comprova apresentação ao cliente. Registro criado permanece identificado como TESTE; não há exclusão automática."
+}

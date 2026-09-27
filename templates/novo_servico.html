@@ -4,14 +4,15 @@
     <h2>Registrar Novo Serviço para {{ pessoa.ds_nome }}</h2>
     
     <form action="{{ url_for('pessoa_bp.novo_servico', id=pessoa.seq_id) }}" method="post" class="form-card">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <label for="ds_nome">Nome do Serviço</label>
-            <input type="text" id="ds_nome" name="ds_nome" required placeholder="Ex: Consulta, Exame, Tratamento">
+            <input type="text" id="ds_nome" name="ds_nome" required maxlength="100" value="{{ request.form.get('ds_nome', '') }}" placeholder="Ex: Consulta, Exame, Tratamento">
         </div>
         
         <div class="form-group">
             <label for="char_descricao">Descrição</label>
-            <textarea id="char_descricao" name="char_descricao" rows="6" placeholder="Descreva detalhes do serviço realizado"></textarea>
+            <textarea id="char_descricao" name="char_descricao" rows="6" maxlength="255" placeholder="Descreva detalhes do serviço realizado">{{ request.form.get('char_descricao', '') }}</textarea>
         </div>
         
         <div class="form-actions">

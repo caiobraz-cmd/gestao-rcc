@@ -1,5 +1,7 @@
 # Backlog do Projeto
 
+> Revisão de 27/09/2026: os itens históricos marcados como implementados indicam existência de código. O fluxo de pacientes da candidata 0.4.0-rc1 passou na homologação com API real; serviços, cestas e exclusão permanecem desabilitados. Consulte [estado atual](../entrega/ENTREGA-PRODUTO.md) e [limitações](../entrega/LIMITACOES.md).
+
 ## Objetivo do backlog
 
 Este backlog reune as funcionalidades, melhorias, ideias e possibilidades de evolucao do Sistema de Gestao RCC.

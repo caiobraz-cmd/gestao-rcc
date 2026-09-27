@@ -42,9 +42,9 @@
         </div>
         <div class="acoes">
             <form action="{{ url_for('pessoa_bp.renovar_cesta', id=paciente.seq_id) }}" method="post" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-primary" style="background-color: var(--success);"><i class="fa-solid fa-check"></i> Entregue Hoje</button>
             </form>
-            <button class="btn btn-danger" onclick="alert('Funcionalidade de pendência em breve.')"><i class="fa-solid fa-xmark"></i> Pendência</button>
         </div>
     </div>
     {% endfor %}
@@ -57,6 +57,12 @@
         </a>
     </div>
 
+    <form method="get" class="form-group" role="search">
+        <label for="busca">Buscar por nome ou CPF</label>
+        <input id="busca" name="q" value="{{ busca }}">
+        <button class="btn btn-secondary" type="submit">Buscar</button>
+        <a href="{{ url_for('pessoa_bp.listar') }}">Limpar busca</a>
+    </form>
     <table>
         <thead>
             <tr>
@@ -76,12 +82,14 @@
                 <td>{{ pessoa.ds_nome }}</td>
                 <td>{{ pessoa.num_cpf }}</td>
                 <td>{{ pessoa.dt_nascimento }}</td>
-                <td>{{ pessoa.num_telefone }}</td>
+                <td>{{ pessoa.num_telefone or 'Não informado' }}</td>
                 <td>
-                    {% if pessoa.data_obito %}
-                        <span class="badge badge-death"><i class="fa-solid fa-cross"></i> Óbito</span>
-                    {% else %}
+                    {% if pessoa.status == 'INATIVO' %}
+                        <span class="badge badge-death">Inativo</span>
+                    {% elif pessoa.status == 'ATIVO' %}
                         <span class="badge badge-active"><i class="fa-solid fa-heart-pulse"></i> Ativo</span>
+                    {% else %}
+                        <span class="badge">Situação não informada</span>
                     {% endif %}
                 </td>
                 <td class="acoes">
@@ -91,15 +99,18 @@
                     <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary" title="Editar">
                         <i class="fa-solid fa-pen"></i>
                     </a>
+                    {% if config.ORDS_SERVICOS_HABILITADOS %}
                     <form action="{{ url_for('pessoa_bp.deletar', id=pessoa.seq_id) }}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta pessoa?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-danger" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% else %}
             <tr>
                 <td colspan="7" style="text-align: center; color: #64748b; padding: 2rem;">
-                    Nenhuma pessoa cadastrada ainda.
+                    Nenhum paciente encontrado para esta consulta.
                 </td>
             </tr>
             {% endfor %}

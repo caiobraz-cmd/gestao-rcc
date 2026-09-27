@@ -4,7 +4,29 @@ Todas as alteracoes relevantes realizadas no Sistema de Gestao RCC sao registrad
 
 **Nota de rastreabilidade:** Este CHANGELOG foi criado retrospectivamente em 2026 a partir do historico Git, codigo-fonte, documentacao e registros de Sprint disponiveis. Os registros anteriores a criacao deste arquivo representam mudancas reais identificadas no projeto, mesmo quando nao existia um CHANGELOG formal na epoca.
 
-## Estado atual - versao academica 0.3
+## 0.4.0-rc1 — 26/09/2026 — candidata à homologação
+
+### Revisão de conexão — 27/09/2026
+
+- Cliente da API alterado para HTTPX 0.28.1, com suporte a HTTP/2, após comparação real de conectividade.
+- Homologação real aprovada: login, listagem, rejeição de CPF inválido sem criação, cadastro, detalhes, edição, inativação, saída, proteção após saída, nova sessão e persistência.
+- Registro fictício ID 21 mantido inativo; nenhuma exclusão realizada nos testes.
+- `INICIAR.cmd` incluído para preparar e abrir a instalação local; configuração de operador continua individual, sem senha padrão.
+- Apresentação e aceite do cliente continuam pendentes. Serviços, cestas e dados médicos não foram habilitados.
+
+### Preparação inicial — 26/09/2026
+
+- Cadastro e edição adequados aos campos da API Oracle examinada, com nova leitura para confirmar a gravação.
+- Removida a listagem fictícia do fluxo normal; incluídas busca e paginação da coleção.
+- Configuração obrigatória, operador com senha em hash, proteção das rotas e dos formulários.
+- Validação de CPF, datas, situação e limites dos campos; tratamento de falhas sem expor dados pessoais.
+- Recursos sem contrato remoto validado permanecem desabilitados: serviços, cestas e informações médicas.
+- Versão nas telas, instruções de execução, roteiro do cliente, limitações e testes automatizados locais.
+- Ajuste do formulário para evitar rolagem horizontal e manter o campo de situação consistente com os demais campos.
+- Exportação da definição da API e estrutura lógica das tabelas; capturas reais de login, entrada inválida, falha de conexão e saída.
+- Homologação Oracle e demonstração ao cliente são pendências acompanhadas em `docs/entrega/ENTREGA-PRODUTO.md`.
+
+## Estado anterior - versao academica 0.3
 
 ### Adicionado
 

@@ -1,0 +1,10 @@
+{
+  "tipo": "Consulta real somente de leitura",
+  "user_agent": "GestaoRCC/0.4.0-rc1",
+  "resultados": [
+    {"endereco": "https://oracleapex.com/", "http": 403, "tipo": "text/html", "servidor": "AkamaiNetStorage", "autenticacao_exigida": null, "titulo_erro": "fw_error_www"},
+    {"endereco": "https://oracleapex.com/ords/gestaorcc/rcc/pessoas/", "http": 403, "tipo": "text/html", "servidor": "AkamaiNetStorage", "autenticacao_exigida": null, "titulo_erro": "fw_error_www"}
+  ],
+  "interpretacao": "A mesma página HTML de erro foi retornada no host e na API. Isso sugere recusa na camada de proteção do site, não uma resposta JSON do handler ORDS. A regra exata ainda não foi identificada.",
+  "alteracoes_remotas": "Nenhuma alteração de dados, permissões ou segurança realizada."
+}
