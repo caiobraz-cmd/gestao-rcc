@@ -29,6 +29,9 @@
             <div class="info-item">
                 <strong>Endereço:</strong> {{ pessoa.char_endereco or 'Não informado' }}
             </div>
+            <div class="info-item">
+                <strong>Situação:</strong> {{ pessoa.status or 'Não informada' }}
+            </div>
             {% if pessoa.data_obito %}
             <div class="info-item">
                 <strong>Data de Óbito:</strong> <span style="color: red;">{{ pessoa.data_obito }}</span>
@@ -36,6 +39,7 @@
             {% endif %}
         </div>
 
+        {% if config.ORDS_DADOS_MEDICOS_HABILITADOS %}
         <h3>Informações Médicas</h3>
         <div class="info-section">
             <div class="info-item">
@@ -59,10 +63,25 @@
                 <p>{{ pessoa.char_observacoes or 'Não informado' }}</p>
             </div>
         </div>
+        {% endif %}
     </div>
 
+    {% if config.ORDS_CESTAS_HABILITADAS %}
+    <section class="detalhes-card">
+        <h2>Cesta básica</h2>
+        <p>Última entrega: {{ pessoa.dt_ultima_cesta or 'Nenhuma registrada' }}</p>
+        <p>Frequência: {{ pessoa.num_frequencia_cesta or 'Não recebe' }}{% if pessoa.num_frequencia_cesta %} dias{% endif %}</p>
+        {% if pessoa.num_frequencia_cesta and not pessoa.data_obito %}
+        <form method="post" action="{{ url_for('pessoa_bp.renovar_cesta', id=pessoa.seq_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-primary" type="submit">Registrar entrega de cesta hoje</button>
+        </form>
+        {% endif %}
+    </section>
+    {% endif %}
     <hr style="margin: 2rem 0;">
 
+    {% if config.ORDS_SERVICOS_HABILITADOS %}
     <div class="header-action">
         <h2>Histórico de Serviços</h2>
         <a href="{{ url_for('pessoa_bp.novo_servico', id=pessoa.seq_id) }}" class="btn btn-primary">Adicionar Serviço</a>
@@ -91,5 +110,8 @@
         </table>
     {% else %}
         <p>Nenhum serviço registrado para este paciente.</p>
+    {% endif %}
+    {% else %}
+    <p>O registro de serviços estará disponível em uma próxima atualização.</p>
     {% endif %}
 {% endblock %}

@@ -1,221 +1,113 @@
 # Gestão RCC
 
-Sistema web para apoio à gestão de pacientes, serviços e benefícios da Rede de Combate ao Câncer.
+Sistema web de apoio à Rede de Combate ao Câncer, desenvolvido por Caio Braz e Osvaldo Mazoni Neto.
 
-## Integrantes
+**Versão candidata: 0.4.0-rc1 — revisão de conexão em 27/09/2026.** Cadastro, consulta, edição e inativação foram testados com o Oracle real. O relatório e as capturas estão em [Evidências](docs/evidences/produto/README.md). A apresentação ao cliente ainda precisa ser realizada e registrada em [Entrega do produto](docs/entrega/ENTREGA-PRODUTO.md). Esta é uma versão local para demonstração, não uma implantação pública de produção.
 
-- Caio Braz
-- Osvaldo Mazoni Neto
+## Objetivo e escopo
 
-## Objetivo do projeto
+Organizar o cadastro de pacientes e sua consulta. A integração usa Oracle ORDS, sem banco local substituto. Foram implementados login de operador configurável, consulta, busca, cadastro, edição e mudança de situação ativo/inativo. Cadastro, edição e inativação foram confirmados por novas leituras da API, inclusive após uma nova sessão.
 
-O objetivo do Gestão RCC é dar continuidade a um sistema iniciado anteriormente, organizando sua documentação, fluxo de trabalho, versionamento e evolução até uma versão 1.0 funcional.
+Serviços, informações médicas e cestas não estão habilitados por padrão: o módulo ORDS examinado só publica pacientes e sua tabela não contém os campos médicos ou de cestas esperados no código antigo. Os recursos que ainda dependem de configuração são explicados em [Limitações](docs/entrega/LIMITACOES.md).
 
-O sistema busca auxiliar a Rede de Combate ao Câncer no cadastro de pacientes, acompanhamento de informações importantes, registro de serviços prestados e controle de benefícios, como entrega de cestas básicas.
+## Tecnologias e arquitetura
 
-## Contexto da disciplina
+- Python, Flask 3.0.0, Jinja2, HTML e CSS.
+- HTTPX 0.28.1 com suporte a HTTP/2 para comunicação com Oracle ORDS por HTTPS.
+- python-dotenv para configuração local; Werkzeug para hash de senha.
+- unittest para testes automatizados, sem dependência adicional.
+- Navegador → Flask → Oracle ORDS → banco Oracle.
 
-Nesta disciplina, a equipe deve simular uma experiência real de mercado, aplicando gestão de projetos, versionamento, documentação de processos e execução de sprints semanais.
+A interface usa ícones e fontes de serviços externos; acesso à internet é necessário para a API. Não se deve enviar dados reais de pacientes em evidências.
 
-A Sprint 1 tem como foco comprovar que a equipe possui um fluxo funcional de trabalho, com issues, branches, commits, Pull Requests, revisões, documentação e evidências reais de execução.
+## Execução no Windows
 
-## Tecnologias utilizadas
+Pré-requisitos: Python 3.11 ou superior, acesso à API ORDS e terminal na pasta do projeto. A execução dos testes desta revisão foi validada no Python 3.14.4; outras versões precisam de validação no ambiente de destino.
 
-- Python
-- Flask
-- Jinja2
-- HTML
-- CSS
-- Bootstrap
-- Oracle ORDS / API REST
-- Git
-- GitHub
-- Markdown
+**Atalho no Windows:** abra `INICIAR.cmd`. Ele prepara o ambiente, instala as dependências, pede sua configuração na primeira execução e inicia o sistema. A URL do Oracle já é sugerida pelo configurador; pressione Enter para mantê-la. Crie seu próprio usuário e senha e acesse `http://127.0.0.1:5000`. Mantenha a janela aberta enquanto usar o sistema. O passo a passo manual está abaixo.
 
-## Estado atual do projeto
+1. Baixe e extraia o código. Abra o PowerShell na pasta que contém este README.
+2. Prepare o ambiente e instale as versões registradas:
 
-O projeto já possui uma base inicial em Flask, contendo:
+~~~powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+~~~
 
-- estrutura principal da aplicação;
-- rotas para pacientes;
-- telas HTML com templates Jinja2;
-- arquivos estáticos;
-- autenticação inicial;
-- integração planejada com API Oracle ORDS;
-- lógica inicial de controle de cestas em modo de teste.
+3. Configure a instalação:
 
-## Entrega — Sprint 1
+~~~powershell
+.\.venv\Scripts\python.exe configurar.py
+~~~
 
-A Sprint 1 foi planejada para estruturar e comprovar o fluxo de trabalho da equipe.
+O programa pergunta a URL base da API, o usuário da aplicação e uma senha de pelo menos 12 caracteres. A senha é armazenada como hash. Se o ORDS exigir um token Bearer, ele é informado em campo oculto. O login do painel APEX é diferente do login do Gestão RCC e não é solicitado pelo aplicativo.
 
-### Documentação da Sprint 1
+A URL base deve terminar no módulo, por exemplo `https://oracleapex.com/ords/gestaorcc/rcc/`, **sem** acrescentar `pessoas/` ou `:id`. O `.env.example` lista as variáveis, sem credenciais. O configurador não sobrescreve um `.env` existente.
 
-- [Workflow funcional da equipe](docs/workflow.md)
-- [Ambiente de desenvolvimento](docs/development-environment.md)
-- [Referências bibliográficas](docs/references.md)
+4. Inicie:
 
-### POPs
+~~~powershell
+.\.venv\Scripts\python.exe run.py
+~~~
 
-- [POP — Desenvolvedor: criar branch](docs/pops/desenvolvedor-criar-branch.md)
-- [POP — Desenvolvedor: abrir Pull Request](docs/pops/desenvolvedor-abrir-pull-request.md)
-- [POP — Documentador: atualizar documentação](docs/pops/documentador-atualizar-documentacao.md)
-- [POP — Documentador: registrar evidências](docs/pops/documentador-registrar-evidencias.md)
+5. Acesse [http://127.0.0.1:5000](http://127.0.0.1:5000), entre com o operador criado e siga o [roteiro de demonstração](docs/entrega/ROTEIRO-DEMONSTRACAO.md).
 
-### Sprint
+Para encerrar, pressione Ctrl+C no terminal. O processo local escuta somente neste computador e não usa debug.
 
-- [Índice de Sprints](docs/sprints/README.md)
-- [Sprints históricas reconstruídas](docs/sprints/historico/README.md)
-- [Template de Sprint](docs/sprints/sprint-template.md)
-- [Registro da Sprint 1](docs/sprints/sprint-01.md)
+## Linux ou macOS
 
-### Evidências
+~~~sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python configurar.py
+.venv/bin/python run.py
+~~~
 
-- [Evidências de versionamento](docs/evidences/version-control/README.md)
+## Verificações
 
-## Estrutura do repositório
+~~~powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe tools/verificar_ords.py --url https://oracleapex.com/ords/gestaorcc/rcc/pessoas/
+~~~
 
-```txt
-gestao-rcc/
-├── app/                         # Código principal da aplicação Flask
-├── templates/                   # Templates HTML/Jinja2
-├── static/                      # Arquivos CSS e estáticos
-├── docs/                        # Documentação do projeto
-│   ├── planning/                # Planejamento geral
-│   ├── workflow/                # Documentos do primeiro bimestre
-│   ├── pops/                    # Procedimentos Operacionais Padrão
-│   ├── sprints/                 # Template e registros de sprint
-│   └── evidences/               # Evidências da execução
-├── src/                         # Referência estrutural exigida
-├── config.py                    # Configurações da aplicação
-├── run.py                       # Execução local
-├── requirements.txt             # Dependências Python
-├── .env.example                 # Exemplo de variáveis de ambiente
-└── README.md
-```
+Os testes automatizados simulam respostas HTTP: validam a aplicação, mas não comprovam que a API remota esteja disponível. O diagnóstico faz somente leituras e informa status e nomes de campos, sem imprimir pacientes. O endereço `/ping` identifica a versão e o processo Flask; não testa o Oracle.
 
-## Como executar localmente
+## Configuração e limites operacionais
 
-### 1. Clonar o repositório
+- `API_BASE_URL`: endereço base do módulo ORDS.
+- `API_TOKEN`: token Bearer se a API exigir autenticação; não é a senha do APEX.
+- `SECRET_KEY`: segredo aleatório de pelo menos 32 caracteres, gerado pelo configurador.
+- `ADMIN_USERNAME` e `ADMIN_PASSWORD_HASH`: operador desta instalação. Não há senha padrão.
+- `ORDS_SERVICOS_HABILITADOS=false`: só alterar após disponibilizar e testar o contrato de serviços.
+- `ORDS_CESTAS_HABILITADAS=false`: só alterar após criar e homologar a persistência das cestas.
+- `FLASK_ENV=development`: seleção própria desta aplicação. Para produção, a configuração exige HTTPS e cookie seguro.
 
-```bash
-git clone https://github.com/caiobraz-cmd/gestao-rcc.git
-cd gestao-rcc
-```
+A sessão expira após 30 minutos. Os formulários são protegidos contra envio sem token de sessão. A API deve ter sua própria autorização: o login Flask não impede acesso direto a um endpoint Oracle público.
 
-### 2. Criar ambiente virtual
+Não usar `run.py` como servidor público. Publicação exige servidor WSGI, HTTPS, proteção da API, gestão de usuários e revisão operacional. Esta entrega prevê execução local demonstrável.
 
-No Windows PowerShell:
+## Contrato do banco
 
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
+Consulte [Contrato Oracle verificado](docs/entrega/CONTRATO-ORACLE.md). A URL de um painel APEX com parâmetro de sessão não é a URL da API e não deve ser incluída nos arquivos distribuídos.
 
-### 3. Instalar dependências
+A pasta [database](database/README.md) inclui a definição exportada do módulo e a estrutura das tabelas, sem dados. Não importar sobre o banco existente.
 
-```powershell
-pip install -r requirements.txt
-```
+Somente em base fictícia autorizada, o seguinte teste percorre os fluxos Flask usando o Oracle real. Ele cria um registro identificado como TESTE, edita e deixa esse registro inativo; não exclui dados:
 
-### 4. Configurar variáveis de ambiente
+~~~powershell
+.\.venv\Scripts\python.exe tools/homologar_ords.py --url https://oracleapex.com/ords/gestaorcc/rcc/ --confirmar-dados-ficticios
+~~~
 
-Criar um arquivo `.env` com base no `.env.example`:
+O relatório é salvo em `docs/evidences/produto/`. A execução de 27/09/2026 concluiu todas as 11 verificações com o Oracle real; o registro fictício ID 21 ficou inativo. A falha inicial de conexão foi preservada como histórico. A troca para HTTPX foi validada; não foi necessário alterar permissões, autenticação Oracle ou banco. Consulte [Diagnóstico e correção](docs/entrega/CONEXAO-ORACLE.md).
 
-```env
-API_BASE_URL=
-SECRET_KEY=
-FLASK_ENV=development
-ITEMS_PER_PAGE=20
-```
+## Documentação da entrega
 
-O arquivo `.env` não deve ser enviado ao GitHub.
-
-### 5. Executar o projeto
-
-```powershell
-python run.py
-```
-
-A aplicação ficará disponível em:
-
-```txt
-http://localhost:5000
-```
-
-### 6. Testar o servidor
-
-Acessar:
-
-```txt
-http://localhost:5000/ping
-```
-
-Resultado esperado:
-
-```txt
-Pong! O servidor Flask está no ar.
-```
-
-## Workflow da equipe
-
-A equipe utiliza uma adaptação simples do GitHub Flow:
-
-1. Criar uma issue para cada tarefa.
-2. Criar uma branch a partir da `main`.
-3. Fazer as alterações necessárias.
-4. Realizar commits com mensagens compreensíveis.
-5. Abrir Pull Request.
-6. Solicitar revisão de outro integrante.
-7. Fazer merge após revisão.
-8. Registrar evidências.
-
-## Divisão de papéis
-
-### Caio Braz
-
-Função: Desenvolvedor / responsável técnico.
-
-Responsabilidades:
-
-- documentação do workflow;
-- documentação do ambiente de desenvolvimento;
-- criação dos POPs da função Desenvolvedor;
-- validação da execução local do sistema;
-- abertura e revisão de Pull Requests.
-
-### Osvaldo Mazoni Neto
-
-Função: Documentador / apoio de processos.
-
-Responsabilidades:
-
-- criação dos POPs da função Documentador;
-- registro da Sprint 1;
-- organização das evidências;
-- apoio na documentação do processo;
-- revisão de Pull Requests.
-
-## Planejamento do projeto
-
-- [Visão do Projeto](docs/planning/project-vision.md)
-- [Backlog](docs/planning/backlog.md)
-- [Roadmap](docs/planning/roadmap.md)
+- [Conferência dos sete requisitos](docs/entrega/ENTREGA-PRODUTO.md)
+- [Problemas conhecidos e limitações](docs/entrega/LIMITACOES.md)
+- [Roteiro para o cliente](docs/entrega/ROTEIRO-DEMONSTRACAO.md)
+- [Evidências e resultados](docs/evidences/produto/README.md)
 - [Changelog](CHANGELOG.md)
-- [Sprints](docs/sprints/README.md)
+- [Roadmap](docs/planning/roadmap.md) e [backlog](docs/planning/backlog.md)
+- [Workflow da equipe](docs/workflow.md) e [sprints](docs/sprints/README.md)
 
-## Versão atual
-
-Versão acadêmica atual: `0.3`
-
-A versão `1.0` deverá ser preparada até o final do terceiro bimestre.
-
-## Segurança
-
-- O arquivo `.env` não deve ser versionado.
-- Dados sensíveis devem ser armazenados em variáveis de ambiente.
-- A branch `main` deve representar uma versão estável.
-- Alterações devem ser feitas por branch e Pull Request.
-
-## Licença
-
-Projeto acadêmico desenvolvido para fins educacionais.
+Não distribua `.env`, ambientes virtuais, cache, histórico `.git` ou bancos locais contendo dados. O pacote deve conter fontes, dependências, instruções e evidências da versão correspondente.

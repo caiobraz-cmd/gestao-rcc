@@ -1,0 +1,20 @@
+test_all_internal_routes_require_login (test_app.ProductTests.test_all_internal_routes_require_login) ... ok
+test_api_failure_is_handled_without_traceback (test_app.ProductTests.test_api_failure_is_handled_without_traceback) ... ok
+test_basket_never_claims_success_without_persistence (test_app.ProductTests.test_basket_never_claims_success_without_persistence) ... ok
+test_configuration_and_version (test_app.ProductTests.test_configuration_and_version) ... ok
+test_create_does_not_claim_success_when_readback_fails (test_app.ProductTests.test_create_does_not_claim_success_when_readback_fails) ... ok
+test_create_valid_and_reject_invalid (test_app.ProductTests.test_create_valid_and_reject_invalid) ... ok
+test_csrf_blocks_post (test_app.ProductTests.test_csrf_blocks_post) ... ok
+test_delete_preserves_service_history (test_app.ProductTests.test_delete_preserves_service_history) ... ok
+test_duplicate_not_sent (test_app.ProductTests.test_duplicate_not_sent) ... ok
+test_edit_details_and_service (test_app.ProductTests.test_edit_details_and_service) ... ok
+test_edit_does_not_claim_success_when_oracle_ignores_change (test_app.ProductTests.test_edit_does_not_claim_success_when_oracle_ignores_change) ... ok
+test_login_invalid_valid_and_logout (test_app.ProductTests.test_login_invalid_valid_and_logout) ... ok
+test_pagination_reads_all_pages (test_app.ProductTests.test_pagination_reads_all_pages) ... ok
+test_real_schema_field_mapping (test_app.ProductTests.test_real_schema_field_mapping) ... ok
+test_unavailable_service_does_not_call_api (test_app.ProductTests.test_unavailable_service_does_not_call_api) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 8.602s
+
+OK

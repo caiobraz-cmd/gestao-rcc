@@ -1,382 +1,222 @@
-# -*- coding: utf-8 -*-
-"""
-Blueprint para as rotas da aplicação, consumindo a API do Oracle (ORDS).
-
-Este módulo define todas as rotas e a lógica de visualização, atuando como
-o controlador que faz a ponte entre os templates (front-end) e
-a API RESTful (back-end).
-"""
-
-import requests
-import json
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
-from datetime import datetime, timedelta
+"""Fluxos de pacientes e serviços usando somente Oracle ORDS."""
+from datetime import date, datetime, timedelta, timezone
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from app import ords
 from app.routes.auth_routes import login_required
+from app.validation import PATIENT_FIELDS, patient
 
-# --- Configuração do Blueprint ---
-pessoa_bp = Blueprint(
-    'pessoa_bp',
-    __name__,
-    template_folder='../../templates',
-    static_folder='../../static'
-)
+pessoa_bp = Blueprint('pessoa_bp', __name__)
 
-# ============================================================================
-# DADOS DE TESTE (MOCK) PARA A CESTA BÁSICA
-# ============================================================================
-# Mude para False quando for usar o banco de dados Oracle de verdade
-USAR_MOCK = True 
+def baskets_enabled():
+    return current_app.config['ORDS_CESTAS_HABILITADAS']
 
-MOCK_PESSOAS = [
-    { "seq_id": 1, "ds_nome": "Marcos Oliveira (Atrasado)", "num_cpf": "111.222.333-44", "dt_nascimento": "1980-05-15", "num_telefone": "(44) 9999-0001", "dt_ultima_cesta": (datetime.now() - timedelta(days=40)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 30 },
-    { "seq_id": 2, "ds_nome": "Ana Costa (Atrasado)", "num_cpf": "222.333.444-55", "dt_nascimento": "1992-08-20", "num_telefone": "(44) 9999-0002", "dt_ultima_cesta": (datetime.now() - timedelta(days=12)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 7 },
-    { "seq_id": 3, "ds_nome": "João Silva", "num_cpf": "333.444.555-66", "dt_nascimento": "1975-03-10", "num_telefone": "(44) 9999-0003", "dt_ultima_cesta": (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 30 },
-    { "seq_id": 4, "ds_nome": "Maria Santos", "num_cpf": "444.555.666-77", "dt_nascimento": "1988-12-05", "num_telefone": "(44) 9999-0004", "dt_ultima_cesta": (datetime.now() - timedelta(days=20)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 30 },
-    { "seq_id": 5, "ds_nome": "Ricardo Pereira", "num_cpf": "555.666.777-88", "dt_nascimento": "2000-01-25", "num_telefone": "(44) 9999-0005", "dt_ultima_cesta": (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 7 },
-    { "seq_id": 6, "ds_nome": "Beatriz Lima", "num_cpf": "666.777.888-99", "dt_nascimento": "1995-06-14", "num_telefone": "(44) 9999-0006", "dt_ultima_cesta": (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d'), "num_frequencia_cesta": 15 }
-]
+def item(identifier):
+    data = ords.call('GET', f'pessoas/{identifier}')
+    if 'items' in data:
+        rows = data['items']
+        if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
+            raise ords.APIError('Paciente não encontrado ou resposta da API inválida.', 404)
+        data = rows[0]
+    if str(data.get('seq_id')) != str(identifier):
+        raise ords.APIError('A API não retornou o paciente solicitado.')
+    for field in ('dt_nascimento', 'data_obito', 'dt_ultima_cesta'):
+        if data.get(field):
+            data[field] = str(data[field])[:10]
+    return data
 
-# --- Função Auxiliar ---
-def get_api_url():
-    """Busca a URL base da API (ex: .../ords/bulldog/) a partir da config."""
-    return current_app.config['API_BASE_URL']
+def api_error(error):
+    flash(str(error), 'danger')
+    return render_template('erro.html', titulo='Operação não concluída', mensagem=str(error)), (404 if error.status == 404 else 503)
+
+def duplicate(cpf, exclude=None):
+    # Verificação defensiva em toda a coleção: API customizada pode ignorar q.
+    for row in ords.collection('pessoas/'):
+        value = ''.join(c for c in str(row.get('num_cpf') or '') if c.isdigit())
+        if value == cpf and str(row.get('seq_id')) != str(exclude):
+            return True
+    return False
 
 
-# ============================================================================
-# ROTAS PARA A ENTIDADE 'PESSOA' (CRUD VIA API)
-# ============================================================================
+def verify_saved(saved, expected):
+    """HTTP 2xx sozinho não comprova que o handler gravou os campos."""
+    for key, value in expected.items():
+        actual = saved.get(key)
+        if key == 'dt_nascimento' and actual:
+            actual = str(actual)[:10]
+        if key == 'num_cpf':
+            actual = ''.join(c for c in str(actual or '') if c.isdigit())
+        if str(actual or '') != str(value or ''):
+            raise ords.APIError('Não foi possível confirmar todos os dados salvos. Consulte o cadastro antes de repetir a operação.')
 
 @pessoa_bp.route('/')
 @login_required
 def listar():
-    """Exibe a lista de todas as pessoas cadastradas e verifica atrasos nas cestas."""
-    pessoas = []
-    pacientes_atrasados = []
-    hoje = datetime.now().date()
-    
-    if USAR_MOCK:
-        # ==========================================
-        # 1. LÓGICA DE TESTE (MOCK LOCAL)
-        # ==========================================
-        pessoas = MOCK_PESSOAS
-        for p in pessoas:
-            if p.get('dt_ultima_cesta') and p.get('num_frequencia_cesta'):
-                ultima_cesta = datetime.strptime(p['dt_ultima_cesta'], '%Y-%m-%d').date()
-                frequencia = int(p['num_frequencia_cesta'])
-                dias_passados = (hoje - ultima_cesta).days
-                
-                if dias_passados > frequencia:
-                    p['dias_atraso'] = dias_passados - frequencia
-                    pacientes_atrasados.append(p)
-    else:
-        # ==========================================
-        # 2. LÓGICA REAL (API ORACLE ORIGINAL)
-        # ==========================================
-        try:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-            api_url = f"{get_api_url()}pessoas"
-            print(f"--- [DEBUG] GET para: {api_url} ---")
-            response = requests.get(api_url, headers=headers, timeout=15)
-
-            print(f"--- [DEBUG] GET Status Code: {response.status_code} ---")
-            response.raise_for_status()
-            data = response.json()
-            pessoas = data.get('items', [])
-            print(f"--- [DEBUG] GET Recebido {len(pessoas)} itens ---")
-            
-            # Lógica de cálculo rodando nos dados reais do Oracle
-            for p in pessoas:
-                if p.get('dt_ultima_cesta') and p.get('num_frequencia_cesta'):
-                    try:
-                        # Pega os primeiros 10 caracteres (YYYY-MM-DD)
-                        data_str = p['dt_ultima_cesta'][:10] 
-                        ultima_cesta = datetime.strptime(data_str, '%Y-%m-%d').date()
-                        frequencia = int(p['num_frequencia_cesta'])
-                        dias_passados = (hoje - ultima_cesta).days
-                        
-                        if dias_passados > frequencia:
-                            p['dias_atraso'] = dias_passados - frequencia
-                            pacientes_atrasados.append(p)
-                    except Exception as e:
-                        print(f"Erro ao calcular cesta de {p.get('ds_nome')}: {e}")
-
-        except requests.exceptions.Timeout:
-            print("\n--- [DEBUG] Erro: Timeout na requisição GET (listar) ---\n")
-            flash("Erro ao listar pacientes: A conexão demorou muito (Timeout).", 'danger')
-        except requests.exceptions.RequestException as e:
-            print(f"\n--- [DEBUG] Erro capturado na requisição GET (listar): {e} ---\n")
-            flash(f"Erro ao conectar com a API do Oracle: {e}", "danger")
-
-    return render_template('listar.html', pessoas=pessoas, pacientes_atrasados=pacientes_atrasados, titulo="Lista de Pacientes")
-
+    try:
+        people = ords.collection('pessoas/')
+    except ords.APIError as error:
+        return api_error(error)
+    query = request.args.get('q', '').strip()
+    if query:
+        digits = ''.join(c for c in query if c.isdigit())
+        people = [p for p in people if query.casefold() in str(p.get('ds_nome', '')).casefold()
+                  or (digits and digits in ''.join(c for c in str(p.get('num_cpf', '')) if c.isdigit()))]
+    late = []
+    if baskets_enabled():
+        for person in people:
+            try:
+                frequency = int(person.get('num_frequencia_cesta') or 0)
+                if frequency > 0 and person.get('dt_ultima_cesta') and not person.get('data_obito'):
+                    due = date.fromisoformat(str(person['dt_ultima_cesta'])[:10]) + timedelta(days=frequency)
+                    person['proxima_cesta'] = due.isoformat()
+                    if due < date.today():
+                        person['dias_atraso'] = (date.today() - due).days
+                        late.append(person)
+            except (ValueError, TypeError, OverflowError):
+                flash('Um cadastro possui dados de cesta inválidos. Revise a frequência e a data.', 'warning')
+    return render_template('listar.html', pessoas=people, pacientes_atrasados=late, titulo='Pacientes', busca=query)
 
 @pessoa_bp.route('/novo', methods=['GET', 'POST'])
 @login_required
 def novo():
-    """Cria um novo registro de Pessoa via API."""
-    response = None
+    status = 200
     if request.method == 'POST':
-        try:
-            api_url = f"{get_api_url()}pessoas"
-
-            novo_dado = {
-                "ds_nome": request.form.get('ds_nome') or None,
-                "num_cpf": request.form.get('num_cpf') or None,
-                "dt_nascimento": request.form.get('dt_nascimento') or None,
-                "num_telefone": request.form.get('num_telefone') or None,
-                "char_endereco": request.form.get('char_endereco') or None,
-                "char_diagnostico": request.form.get('char_diagnostico') or None,
-                "char_tratamento": request.form.get('char_tratamento') or None,
-                "char_medicamento": request.form.get('char_medicamento') or None,
-                "char_alergia": request.form.get('char_alergia') or None,
-                "char_observacoes": request.form.get('char_observacoes') or None
-            }
-
-            print("\n--- [DEBUG] Enviando Payload ---")
-            print(json.dumps(novo_dado, indent=2))
-            print("--- [DEBUG] PRESTES A EXECUTAR requests.post ---")
-
-            response = requests.post(api_url, json=novo_dado, timeout=10)
-            print("--- [DEBUG] requests.post EXECUTADO ---")
-            print(f"--- [DEBUG] API Respondeu Status: {response.status_code} ---")
-
+        data, errors = patient(request.form, baskets_enabled())
+        if not errors:
             try:
-                print("--- [DEBUG] Resposta API (JSON) ---")
-                print(json.dumps(response.json(), indent=2))
-            except requests.exceptions.JSONDecodeError:
-                print("--- [DEBUG] Resposta API (Texto) ---")
-                print(response.text)
-            print("--- [DEBUG] Fim da Resposta API ---\n")
-
-            if response.status_code != 201:
-                response.raise_for_status()
-
-            flash('Pessoa cadastrada com sucesso!', 'success')
-            return redirect(url_for('pessoa_bp.listar'))
-
-        except requests.exceptions.Timeout:
-            print("\n--- [DEBUG] Erro: Timeout na requisição POST ---\n")
-            flash("Erro ao cadastrar via API: A conexão demorou muito para responder (Timeout).", 'danger')
-
-        except requests.exceptions.RequestException as e:
-            print(f"\n--- [DEBUG] Erro capturado na requisição POST: {e} ---\n")
-            error_message = f"Erro ao cadastrar via API: {e}"
-            if response is not None:
-                error_message += f" (Status: {response.status_code})"
-                try:
-                    error_details = response.json()
-                    error_message += f" Detalhes: {json.dumps(error_details)}"
-                except requests.exceptions.JSONDecodeError:
-                     error_message += f" Resposta: {response.text}"
-            flash(error_message, 'danger')
-
-    return render_template('novo.html', titulo="Novo Paciente")
-
+                if duplicate(data['num_cpf']):
+                    errors.append('Já existe um paciente com este CPF.')
+                else:
+                    ords.call('POST', 'pessoas/', payload=data)
+                    saved = [row for row in ords.collection('pessoas/')
+                             if ''.join(c for c in str(row.get('num_cpf') or '') if c.isdigit()) == data['num_cpf']]
+                    if len(saved) != 1 or not saved[0].get('seq_id'):
+                        raise ords.APIError('O Oracle recebeu o cadastro, mas a leitura de confirmação falhou. Consulte a listagem antes de repetir.')
+                    verify_saved(saved[0], data)
+                    flash('Paciente cadastrado e confirmado no Oracle.', 'success')
+                    return redirect(url_for('pessoa_bp.detalhes', id=saved[0]['seq_id']))
+            except ords.APIError as error:
+                flash(str(error), 'danger')
+                status = 503
+        if errors:
+            for error in errors:
+                flash(error, 'danger')
+            status = 422
+    return render_template('novo.html', titulo='Novo Paciente', valores=request.form), status
 
 @pessoa_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar(id):
-    """Atualiza um registro de Pessoa existente via API."""
-    api_url_item = f"{get_api_url()}pessoas/{id}"
-    response = None
-    pessoa = None
-
+    try:
+        person = item(id)
+    except ords.APIError as error:
+        return api_error(error)
+    status = 200
     if request.method == 'POST':
-        try:
-            dados_atualizados = {
-                "ds_nome": request.form.get('ds_nome'),
-                "num_cpf": request.form.get('num_cpf'),
-                "dt_nascimento": request.form.get('dt_nascimento') or None,
-                "num_telefone": request.form.get('num_telefone') or None,
-                "char_endereco": request.form.get('char_endereco') or None,
-                "char_diagnostico": request.form.get('char_diagnostico') or None,
-                "char_tratamento": request.form.get('char_tratamento') or None,
-                "char_medicamento": request.form.get('char_medicamento') or None,
-                "char_alergia": request.form.get('char_alergia') or None,
-                "char_observacoes": request.form.get('char_observacoes') or None,
-                "data_obito": request.form.get('data_obito') or None
-            }
-
-            print("\n--- [DEBUG] Enviando Payload (PUT) ---")
-            print(json.dumps(dados_atualizados, indent=2))
-            print("--- [DEBUG] PRESTES A EXECUTAR requests.put ---")
-
-            response = requests.put(api_url_item, json=dados_atualizados, timeout=10)
-            print("--- [DEBUG] requests.put EXECUTADO ---")
-            print(f"--- [DEBUG] API Respondeu Status (PUT): {response.status_code} ---")
-            response.raise_for_status()
-
-            flash('Pessoa atualizada com sucesso!', 'success')
-            return redirect(url_for('pessoa_bp.listar'))
-
-        except requests.exceptions.Timeout:
-            print("\n--- [DEBUG] Erro: Timeout na requisição PUT ---\n")
-            flash("Erro ao atualizar via API: A conexão demorou muito (Timeout).", 'danger')
-        except requests.exceptions.RequestException as e:
-            print(f"\n--- [DEBUG] Erro capturado na requisição PUT: {e} ---\n")
-            flash(f"Erro ao atualizar via API: {e}", 'danger')
-
-    if pessoa is None:
-        try:
-            print(f"--- [DEBUG] GET (Editar) para: {api_url_item} ---")
-            response = requests.get(api_url_item, timeout=10)
-            print(f"--- [DEBUG] GET Status Code (Editar): {response.status_code} ---")
-            response.raise_for_status()
-            pessoa = response.json()
-        except requests.exceptions.Timeout:
-             print("\n--- [DEBUG] Erro: Timeout na requisição GET (editar) ---\n")
-             flash("Erro ao buscar dados da pessoa: A conexão demorou muito (Timeout).", 'danger')
-             return redirect(url_for('pessoa_bp.listar'))
-        except requests.exceptions.RequestException as e:
-            print(f"\n--- [DEBUG] Erro capturado na requisição GET (editar): {e} ---\n")
-            flash(f"Erro ao buscar dados da pessoa na API: {e}", 'danger')
-            if response is not None and response.status_code == 404:
-                 flash(f"Erro: Paciente com ID {id} não encontrado.", 'danger')
-            return redirect(url_for('pessoa_bp.listar'))
-
-    if pessoa:
-        return render_template('editar.html', pessoa=pessoa, titulo="Editar Paciente")
-    else:
-        return redirect(url_for('pessoa_bp.listar'))
-
+        data, errors = patient(request.form, baskets_enabled(), editing=True)
+        if not errors:
+            try:
+                if duplicate(data['num_cpf'], exclude=id):
+                    errors.append('Já existe outro paciente com este CPF.')
+                else:
+                    if baskets_enabled():
+                        data['dt_ultima_cesta'] = person.get('dt_ultima_cesta')
+                    ords.call('PUT', f'pessoas/{id}', payload=data)
+                    verify_saved(item(id), data)
+                    flash('Paciente atualizado e confirmado no Oracle.', 'success')
+                    return redirect(url_for('pessoa_bp.detalhes', id=id))
+            except ords.APIError as error:
+                flash(str(error), 'danger')
+                status = 503
+        if errors:
+            for error in errors:
+                flash(error, 'danger')
+            status = 422
+        person.update({key: request.form.get(key, '') for key in PATIENT_FIELDS + ('status',)})
+        person['num_frequencia_cesta'] = request.form.get('frequencia_cesta', '')
+    return render_template('editar.html', pessoa=person, titulo='Editar Paciente'), status
 
 @pessoa_bp.route('/deletar/<int:id>', methods=['POST'])
+@login_required
 def deletar(id):
-    """Deleta um registro de Pessoa via API."""
     try:
-        api_url_item = f"{get_api_url()}pessoas/{id}"
-        print(f"--- [DEBUG] DELETE para: {api_url_item} ---")
-        response = requests.delete(api_url_item, timeout=10)
-        print(f"--- [DEBUG] DELETE Status Code: {response.status_code} ---")
-        response.raise_for_status()
-        flash('Pessoa removida com sucesso!', 'success')
-    except requests.exceptions.Timeout:
-        print("\n--- [DEBUG] Erro: Timeout na requisição DELETE ---\n")
-        flash("Erro ao remover via API: A conexão demorou muito (Timeout).", 'danger')
-    except requests.exceptions.RequestException as e:
-        print(f"\n--- [DEBUG] Erro capturado na requisição DELETE: {e} ---\n")
-        flash(f"Erro ao remover via API: {e}", 'danger')
-    return redirect(url_for('pessoa_bp.listar'))
-
-
-# ============================================================================
-# ROTAS PARA A ENTIDADE 'SERVIÇO' (VINCULADA A 'PESSOA')
-# ============================================================================
+        item(id)
+        if not current_app.config['ORDS_SERVICOS_HABILITADOS']:
+            flash('Exclusão indisponível até validar o histórico de serviços. Use a situação Inativo para preservar o cadastro.', 'warning')
+            return redirect(url_for('pessoa_bp.editar', id=id))
+        services = ords.collection('servicos/', {'pessoa_id': id})
+        if any(str(s.get('sq_idpaciente')) == str(id) for s in services):
+            flash('Não é possível excluir um paciente com serviços registrados. Preserve seu histórico.', 'warning')
+            return redirect(url_for('pessoa_bp.detalhes', id=id))
+        ords.call('DELETE', f'pessoas/{id}')
+        flash('Paciente removido com sucesso.', 'success')
+        return redirect(url_for('pessoa_bp.listar'))
+    except ords.APIError as error:
+        return api_error(error)
 
 @pessoa_bp.route('/pessoa/<int:id>/')
+@login_required
 def detalhes(id):
-    """Exibe a página de detalhes de uma pessoa e seu histórico de serviços."""
-    pessoa = None
-    servicos = []
     try:
-        api_url_pessoa = f"{get_api_url()}pessoas/{id}"
-        print(f"--- [DEBUG] GET (Detalhes/Pessoa) para: {api_url_pessoa} ---")
-        response_pessoa = requests.get(api_url_pessoa, timeout=10)
-        print(f"--- [DEBUG] GET Status Code (Detalhes/Pessoa): {response_pessoa.status_code} ---")
-        response_pessoa.raise_for_status()
-        pessoa = response_pessoa.json()
-
-        api_url_servicos = f"{get_api_url()}servicos/?q={{\"sq_idpaciente\":{id}}}"
-        print(f"--- [DEBUG] GET (Detalhes/Serviços) para: {api_url_servicos} ---")
-        response_servicos = requests.get(api_url_servicos, timeout=10)
-        print(f"--- [DEBUG] GET Status Code (Detalhes/Serviços): {response_servicos.status_code} ---")
-        response_servicos.raise_for_status()
-        servicos_data = response_servicos.json()
-        servicos = servicos_data.get('items', [])
-        print(f"--- [DEBUG] GET Recebido {len(servicos)} serviços ---")
-
-    except requests.exceptions.Timeout:
-        print("\n--- [DEBUG] Erro: Timeout na requisição GET (detalhes) ---\n")
-        flash("Erro ao carregar dados: A conexão demorou muito (Timeout).", 'danger')
-        if pessoa:
-             return render_template('detalhes.html', pessoa=pessoa, servicos=[], titulo=f"Detalhes de {pessoa.get('ds_nome')} (Erro ao carregar serviços)")
-        else:
-            return redirect(url_for('pessoa_bp.listar'))
-    except requests.exceptions.RequestException as e:
-        print(f"\n--- [DEBUG] Erro capturado na requisição GET (detalhes): {e} ---\n")
-        flash(f"Erro ao carregar dados da API: {e}", 'danger')
-        if response_pessoa is not None and response_pessoa.status_code == 404:
-             flash(f"Erro: Paciente com ID {id} não encontrado.", 'danger')
-        return redirect(url_for('pessoa_bp.listar'))
-
-    return render_template('detalhes.html', pessoa=pessoa, servicos=servicos, titulo=f"Detalhes de {pessoa.get('ds_nome')}")
-
+        person = item(id)
+        services = ords.collection('servicos/', {'pessoa_id': id}) if current_app.config['ORDS_SERVICOS_HABILITADOS'] else []
+        services = [s for s in services if str(s.get('sq_idpaciente')) == str(id)]
+    except ords.APIError as error:
+        return api_error(error)
+    return render_template('detalhes.html', pessoa=person, servicos=services, titulo='Detalhes do paciente')
 
 @pessoa_bp.route('/pessoa/<int:id>/servicos/novo', methods=['GET', 'POST'])
+@login_required
 def novo_servico(id):
-    """Adiciona um novo registro de serviço para uma pessoa específica."""
-    pessoa = None
+    if not current_app.config['ORDS_SERVICOS_HABILITADOS']:
+        return render_template('erro.html', titulo='Serviços ainda não habilitados',
+                               mensagem='O registro de serviços aguarda a configuração da API Oracle.'), 409
     try:
-        api_url_pessoa = f"{get_api_url()}pessoas/{id}"
-        print(f"--- [DEBUG] GET (Novo Serviço/Pessoa) para: {api_url_pessoa} ---")
-        response_pessoa = requests.get(api_url_pessoa, timeout=10)
-        print(f"--- [DEBUG] GET Status Code (Novo Serviço/Pessoa): {response_pessoa.status_code} ---")
-        response_pessoa.raise_for_status()
-        pessoa = response_pessoa.json()
-    except requests.exceptions.Timeout:
-         print("\n--- [DEBUG] Erro: Timeout na requisição GET (novo_servico/pessoa) ---\n")
-         flash("Erro ao carregar dados da pessoa: A conexão demorou muito (Timeout).", "danger")
-         return redirect(url_for('pessoa_bp.listar'))
-    except requests.exceptions.RequestException as e:
-        print(f"\n--- [DEBUG] Erro capturado na requisição GET (novo_servico/pessoa): {e} ---\n")
-        flash(f"Erro ao carregar dados da pessoa: {e}", "danger")
-        if response_pessoa is not None and response_pessoa.status_code == 404:
-             flash(f"Erro: Paciente com ID {id} não encontrado.", 'danger')
-        return redirect(url_for('pessoa_bp.listar'))
-
-    if not pessoa:
-        return redirect(url_for('pessoa_bp.listar'))
-
+        person = item(id)
+    except ords.APIError as error:
+        return api_error(error)
+    status = 200
     if request.method == 'POST':
-        response = None
-        try:
-            api_url = f"{get_api_url()}servicos/"
-
-            novo_servico_dado = {
-                "ds_nome": request.form.get('ds_nome') or None,
-                "char_descricao": request.form.get('char_descricao') or None,
-                "dt_dataservico": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                "sq_idpaciente": id
-            }
-
-            print("\n--- [DEBUG] Enviando Payload (Serviço) ---")
-            print(json.dumps(novo_servico_dado, indent=2))
-            print("--- [DEBUG] PRESTES A EXECUTAR requests.post (Serviço) ---")
-
-            response = requests.post(api_url, json=novo_servico_dado, timeout=10)
-            print("--- [DEBUG] requests.post EXECUTADO (Serviço) ---")
-            print(f"--- [DEBUG] API Respondeu Status (Serviço): {response.status_code} ---")
-
+        name = request.form.get('ds_nome', '').strip()
+        description = request.form.get('char_descricao', '').strip()
+        if not 3 <= len(name) or len(name.encode('utf-8')) > 100 or len(description.encode('utf-8')) > 255:
+            flash('Informe um serviço de pelo menos 3 caracteres, até 100 bytes, e descrição de até 255 bytes.', 'danger')
+            status = 422
+        else:
             try:
-                print("--- [DEBUG] Resposta API (JSON/Serviço) ---")
-                print(json.dumps(response.json(), indent=2))
-            except requests.exceptions.JSONDecodeError:
-                print("--- [DEBUG] Resposta API (Texto/Serviço) ---")
-                print(response.text)
-            print("--- [DEBUG] Fim da Resposta API (Serviço) ---\n")
+                ords.call('POST', 'servicos/', payload={'ds_nome': name, 'char_descricao': description or None,
+                          'dt_dataservico': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'sq_idpaciente': id})
+                flash('Serviço registrado. Confira o histórico do paciente.', 'success')
+                return redirect(url_for('pessoa_bp.detalhes', id=id))
+            except ords.APIError as error:
+                flash(str(error), 'danger')
+                status = 503
+    return render_template('novo_servico.html', pessoa=person, titulo='Registrar Serviço'), status
 
-            if response.status_code != 201:
-                 response.raise_for_status()
-
-            flash('Novo serviço registrado com sucesso!', 'success')
-            return redirect(url_for('pessoa_bp.detalhes', id=id))
-
-        except requests.exceptions.Timeout:
-             print("\n--- [DEBUG] Erro: Timeout na requisição POST (Serviço) ---\n")
-             flash("Erro ao registrar serviço: A conexão demorou muito (Timeout).", 'danger')
-        except requests.exceptions.RequestException as e:
-            print(f"\n--- [DEBUG] Erro capturado na requisição POST (Serviço): {e} ---\n")
-            flash(f"Erro ao registrar serviço: {e}", 'danger')
-
-    return render_template('novo_servico.html', pessoa=pessoa, titulo="Registrar Novo Serviço")
-
-# ============================================================================
-# ROTA TEMPORÁRIA PARA O BOTÃO "ENTREGUE" ENQUANTO ESTIVER NO MOCK
-# ============================================================================
 @pessoa_bp.route('/renovar_cesta/<int:id>', methods=['POST'])
 @login_required
 def renovar_cesta(id):
-    """Rota apenas para teste visual do botão verde"""
-    flash(f"Cesta do paciente com ID {id} registrada como entregue (Modo Teste)!", "success")
-    return redirect(url_for('pessoa_bp.listar'))
+    if not baskets_enabled():
+        return render_template('erro.html', titulo='Recurso ainda não habilitado',
+                               mensagem='O registro de cestas aguarda validação da integração com o Oracle.'), 409
+    try:
+        person = item(id)
+        frequency = person.get('num_frequencia_cesta')
+        if person.get('data_obito') or not frequency or not 1 <= int(frequency) <= 365:
+            flash('Revise a situação do paciente e a frequência da cesta antes de registrar entrega.', 'warning')
+            return redirect(url_for('pessoa_bp.detalhes', id=id))
+        today = date.today().isoformat()
+        if person.get('dt_ultima_cesta') == today:
+            flash('A entrega de hoje já foi registrada.', 'info')
+            return redirect(url_for('pessoa_bp.detalhes', id=id))
+        payload = {key: person.get(key) for key in PATIENT_FIELDS + ('data_obito', 'num_frequencia_cesta')}
+        payload['dt_ultima_cesta'] = today
+        ords.call('PUT', f'pessoas/{id}', payload=payload)
+        if item(id).get('dt_ultima_cesta') != today:
+            raise ords.APIError('A API respondeu, mas a data da cesta não foi persistida. Avise o responsável.')
+        flash('Entrega da cesta registrada e confirmada no Oracle.', 'success')
+        return redirect(url_for('pessoa_bp.detalhes', id=id))
+    except (ValueError, TypeError):
+        flash('A frequência cadastrada é inválida.', 'danger')
+        return redirect(url_for('pessoa_bp.detalhes', id=id))
+    except ords.APIError as error:
+        return api_error(error)

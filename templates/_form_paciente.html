@@ -1,0 +1,38 @@
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% for field, label, kind in [
+    ('ds_nome', 'Nome completo', 'text'), ('num_cpf', 'CPF', 'text'),
+    ('dt_nascimento', 'Data de nascimento', 'date'), ('num_telefone', 'Telefone', 'tel')
+] %}
+<div class="form-group">
+    <label for="{{ field }}">{{ label }}</label>
+    <input type="{{ kind }}" id="{{ field }}" name="{{ field }}" value="{{ valores.get(field) or '' }}"
+           {% if field != 'num_telefone' %}required{% endif %} {% if kind != 'date' %}maxlength="{{ {'ds_nome':150, 'num_cpf':14, 'num_telefone':20}[field] }}"{% endif %}>
+</div>
+{% endfor %}
+{% for field, label in [
+    ('char_endereco', 'Endereço')
+] %}
+<div class="form-group full-width">
+    <label for="{{ field }}">{{ label }}</label>
+    <textarea id="{{ field }}" name="{{ field }}" rows="3" maxlength="255">{{ valores.get(field) or '' }}</textarea>
+</div>
+{% endfor %}
+<div class="form-group">
+    <label for="status">Situação</label>
+    <select name="status" id="status">
+        <option value="ATIVO" {% if valores.get('status', 'ATIVO') == 'ATIVO' %}selected{% endif %}>Ativo</option>
+        <option value="INATIVO" {% if valores.get('status') == 'INATIVO' %}selected{% endif %}>Inativo</option>
+    </select>
+</div>
+{% if config.ORDS_CESTAS_HABILITADAS %}
+<div class="form-group">
+    <label for="frequencia_cesta">Frequência da cesta em dias</label>
+    <input type="number" id="frequencia_cesta" name="frequencia_cesta" min="1" max="365"
+           value="{{ valores.get('frequencia_cesta', valores.get('num_frequencia_cesta')) or '' }}">
+    <small>Deixe vazio se o paciente não recebe cesta.</small>
+</div>
+{% endif %}
+<div class="form-actions">
+    <a href="{{ url_for('pessoa_bp.listar') }}" class="btn btn-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-primary">{{ 'Atualizar Paciente' if editando else 'Salvar Paciente' }}</button>
+</div>

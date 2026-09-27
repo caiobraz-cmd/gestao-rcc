@@ -1,0 +1,18 @@
+{
+  "endereco": "https://oracleapex.com/ords/gestaorcc/rcc/pessoas/",
+  "http": 200,
+  "tipo": "application/json",
+  "protocolo": "HTTP/2",
+  "servidor": null,
+  "autenticacao_exigida": null,
+  "quantidade_na_pagina": 2,
+  "campos": [
+    "id",
+    "nome",
+    "cpf",
+    "data_nascimento",
+    "telefone",
+    "endereco",
+    "status"
+  ]
+}
