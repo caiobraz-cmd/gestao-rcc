@@ -1,0 +1,107 @@
+{
+  "versao": "0.5.0-dev",
+  "inicio_utc": "2026-09-27T14:24:53.744291+00:00",
+  "tipo": "Flask e API Oracle reais, sem simulacao",
+  "etapas": [
+    {
+      "etapa": "API sem token recusa GET pessoas/",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "API sem token recusa POST pessoas/",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "API sem token recusa POST cestas/1/",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Login do operador",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Listagem autenticada",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Formulario invalido rejeitado: frequencia_cesta",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Formulario invalido rejeitado: data_obito",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Formulario invalido rejeitado: char_alergia",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Invalidos nao criaram cadastros",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Cadastro completo confirmado",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Detalhes com campos clinicos",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Primeira entrega pendente",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Duas entregas concorrentes: uma aceita, outra recusada",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Apenas uma entrega persistida no historico",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Ultima entrega calculada pelo historico",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Repeticao pela interface bloqueada",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Edicao e limpeza de campo confirmadas",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Edicao preservou historico e frequencia da entrega",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Obito registrado e cadastro inativado",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Oracle impede entrega para inativo",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Persistencia em nova instancia autenticada",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Logout",
+      "resultado": "OK"
+    },
+    {
+      "etapa": "Rotas protegidas apos logout",
+      "resultado": "OK"
+    }
+  ],
+  "concluido": true,
+  "registro_teste_id": 41,
+  "http_entregas_concorrentes": [
+    201,
+    409
+  ],
+  "fim_utc": "2026-09-27T14:25:12.892561+00:00",
+  "observacao": "Dados ficticios; sem exclusao. Nao comprova demonstracao ou aceite do cliente."
+}

@@ -5,7 +5,7 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.4.0-rc1'
+VERSION = '0.5.0-rc1'
 FILES = ['README.md', 'CHANGELOG.md', 'requirements.txt', '.env.example', '.gitignore', 'run.py', 'config.py', 'configurar.py', 'INICIAR.cmd']
 FOLDERS = ['app', 'templates', 'static', 'tests', 'tools', 'database', 'docs', 'src']
 ALLOWED = {'.py', '.md', '.txt', '.html', '.css', '.js', '.json', '.sql', '.png', '.jpg', '.jpeg', '.pdf', '.svg', '.ico'}

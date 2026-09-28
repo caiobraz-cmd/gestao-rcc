@@ -24,12 +24,31 @@
         <option value="INATIVO" {% if valores.get('status') == 'INATIVO' %}selected{% endif %}>Inativo</option>
     </select>
 </div>
+{% if config.ORDS_DADOS_MEDICOS_HABILITADOS %}
+{% for field, label in [('char_diagnostico', 'Diagnóstico'), ('char_tratamento', 'Tratamentos'),
+                       ('char_medicamento', 'Medicamentos'), ('char_alergia', 'Alergias'),
+                       ('char_observacoes', 'Observações')] %}
+<div class="form-group full-width">
+    <label for="{{ field }}">{{ label }}</label>
+    <textarea id="{{ field }}" name="{{ field }}" rows="3" maxlength="2000">{{ valores.get(field) or '' }}</textarea>
+    <small>Opcional. Textos com acentos podem atingir o limite antes de 2000 caracteres.</small>
+</div>
+{% endfor %}
+{% endif %}
+{% if config.ORDS_CESTAS_HABILITADAS or config.ORDS_DADOS_MEDICOS_HABILITADOS %}
+<div class="form-group">
+    <label for="data_obito">Data de óbito, se houver</label>
+    <input type="date" id="data_obito" name="data_obito" value="{{ valores.get('data_obito') or '' }}">
+    <small>Ao informar um óbito, o cadastro ficará inativo e as cestas serão suspensas.</small>
+</div>
+{% endif %}
 {% if config.ORDS_CESTAS_HABILITADAS %}
 <div class="form-group">
     <label for="frequencia_cesta">Frequência da cesta em dias</label>
     <input type="number" id="frequencia_cesta" name="frequencia_cesta" min="1" max="365"
            value="{{ valores.get('frequencia_cesta', valores.get('num_frequencia_cesta')) or '' }}">
-    <small>Deixe vazio se o paciente não recebe cesta.</small>
+    <small>Exemplos: 7, 15, 20 ou 30 dias. Aceita 1 a 365. Deixe vazio se não recebe cesta.
+    A próxima data será calculada a partir da última entrega registrada.</small>
 </div>
 {% endif %}
 <div class="form-actions">

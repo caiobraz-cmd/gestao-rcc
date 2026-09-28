@@ -4,6 +4,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from app import ords
 from app.routes.auth_routes import login_required
 from app.validation import PATIENT_FIELDS, patient
+from app.cestas import agenda, hoje
 
 pessoa_bp = Blueprint('pessoa_bp', __name__)
 
@@ -41,7 +42,7 @@ def verify_saved(saved, expected):
     """HTTP 2xx sozinho não comprova que o handler gravou os campos."""
     for key, value in expected.items():
         actual = saved.get(key)
-        if key == 'dt_nascimento' and actual:
+        if key in ('dt_nascimento', 'data_obito') and actual:
             actual = str(actual)[:10]
         if key == 'num_cpf':
             actual = ''.join(c for c in str(actual or '') if c.isdigit())
@@ -63,16 +64,10 @@ def listar():
     late = []
     if baskets_enabled():
         for person in people:
-            try:
-                frequency = int(person.get('num_frequencia_cesta') or 0)
-                if frequency > 0 and person.get('dt_ultima_cesta') and not person.get('data_obito'):
-                    due = date.fromisoformat(str(person['dt_ultima_cesta'])[:10]) + timedelta(days=frequency)
-                    person['proxima_cesta'] = due.isoformat()
-                    if due < date.today():
-                        person['dias_atraso'] = (date.today() - due).days
-                        late.append(person)
-            except (ValueError, TypeError, OverflowError):
-                flash('Um cadastro possui dados de cesta inválidos. Revise a frequência e a data.', 'warning')
+            person['cesta'] = agenda(person)
+            if person['cesta']['atraso']:
+                person['dias_atraso'] = person['cesta']['atraso']
+                late.append(person)
     return render_template('listar.html', pessoas=people, pacientes_atrasados=late, titulo='Pacientes', busca=query)
 
 @pessoa_bp.route('/novo', methods=['GET', 'POST'])
@@ -80,7 +75,7 @@ def listar():
 def novo():
     status = 200
     if request.method == 'POST':
-        data, errors = patient(request.form, baskets_enabled())
+        data, errors = patient(request.form, baskets_enabled(), medical=current_app.config['ORDS_DADOS_MEDICOS_HABILITADOS'])
         if not errors:
             try:
                 if duplicate(data['num_cpf']):
@@ -112,14 +107,12 @@ def editar(id):
         return api_error(error)
     status = 200
     if request.method == 'POST':
-        data, errors = patient(request.form, baskets_enabled(), editing=True)
+        data, errors = patient(request.form, baskets_enabled(), editing=True, medical=current_app.config['ORDS_DADOS_MEDICOS_HABILITADOS'])
         if not errors:
             try:
                 if duplicate(data['num_cpf'], exclude=id):
                     errors.append('Já existe outro paciente com este CPF.')
                 else:
-                    if baskets_enabled():
-                        data['dt_ultima_cesta'] = person.get('dt_ultima_cesta')
                     ords.call('PUT', f'pessoas/{id}', payload=data)
                     verify_saved(item(id), data)
                     flash('Paciente atualizado e confirmado no Oracle.', 'success')
@@ -131,7 +124,7 @@ def editar(id):
             for error in errors:
                 flash(error, 'danger')
             status = 422
-        person.update({key: request.form.get(key, '') for key in PATIENT_FIELDS + ('status',)})
+        person.update({key: request.form.get(key, '') for key in PATIENT_FIELDS + ('status', 'data_obito')})
         person['num_frequencia_cesta'] = request.form.get('frequencia_cesta', '')
     return render_template('editar.html', pessoa=person, titulo='Editar Paciente'), status
 
@@ -140,7 +133,7 @@ def editar(id):
 def deletar(id):
     try:
         item(id)
-        if not current_app.config['ORDS_SERVICOS_HABILITADOS']:
+        if baskets_enabled() or not current_app.config['ORDS_SERVICOS_HABILITADOS']:
             flash('Exclusão indisponível até validar o histórico de serviços. Use a situação Inativo para preservar o cadastro.', 'warning')
             return redirect(url_for('pessoa_bp.editar', id=id))
         services = ords.collection('servicos/', {'pessoa_id': id})
@@ -160,9 +153,12 @@ def detalhes(id):
         person = item(id)
         services = ords.collection('servicos/', {'pessoa_id': id}) if current_app.config['ORDS_SERVICOS_HABILITADOS'] else []
         services = [s for s in services if str(s.get('sq_idpaciente')) == str(id)]
+        deliveries = ords.collection(f'cestas/{id}/') if baskets_enabled() else []
+        deliveries = [d for d in deliveries if str(d.get('pessoa_id')) == str(id)]
     except ords.APIError as error:
         return api_error(error)
-    return render_template('detalhes.html', pessoa=person, servicos=services, titulo='Detalhes do paciente')
+    return render_template('detalhes.html', pessoa=person, servicos=services, entregas=deliveries,
+                           cesta=agenda(person), titulo='Detalhes do paciente')
 
 @pessoa_bp.route('/pessoa/<int:id>/servicos/novo', methods=['GET', 'POST'])
 @login_required
@@ -200,18 +196,17 @@ def renovar_cesta(id):
                                mensagem='O registro de cestas aguarda validação da integração com o Oracle.'), 409
     try:
         person = item(id)
-        frequency = person.get('num_frequencia_cesta')
-        if person.get('data_obito') or not frequency or not 1 <= int(frequency) <= 365:
-            flash('Revise a situação do paciente e a frequência da cesta antes de registrar entrega.', 'warning')
+        schedule = agenda(person)
+        if not schedule['pode_entregar']:
+            flash('Entrega não registrada: ' + schedule['situacao'] + '. Confira a próxima data e o cadastro.', 'warning')
             return redirect(url_for('pessoa_bp.detalhes', id=id))
-        today = date.today().isoformat()
-        if person.get('dt_ultima_cesta') == today:
-            flash('A entrega de hoje já foi registrada.', 'info')
-            return redirect(url_for('pessoa_bp.detalhes', id=id))
-        payload = {key: person.get(key) for key in PATIENT_FIELDS + ('data_obito', 'num_frequencia_cesta')}
-        payload['dt_ultima_cesta'] = today
-        ords.call('PUT', f'pessoas/{id}', payload=payload)
-        if item(id).get('dt_ultima_cesta') != today:
+        today = hoje().isoformat()
+        # Operação dedicada: nunca regrava dados pessoais para entregar uma cesta.
+        ords.call('POST', f'cestas/{id}/', payload={'data_entrega': today})
+        deliveries = ords.collection(f'cestas/{id}/')
+        confirmed = [d for d in deliveries if str(d.get('pessoa_id')) == str(id)
+                     and str(d.get('data_entrega', ''))[:10] == today and d.get('id')]
+        if len(confirmed) != 1 or item(id).get('dt_ultima_cesta') != today:
             raise ords.APIError('A API respondeu, mas a data da cesta não foi persistida. Avise o responsável.')
         flash('Entrega da cesta registrada e confirmada no Oracle.', 'success')
         return redirect(url_for('pessoa_bp.detalhes', id=id))

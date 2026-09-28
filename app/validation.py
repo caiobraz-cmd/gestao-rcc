@@ -16,7 +16,7 @@ def valid_cpf(value):
     return True
 
 
-def patient(form, baskets=False, editing=False):
+def patient(form, baskets=False, editing=False, medical=False):
     basic_fields = ('ds_nome', 'num_cpf', 'dt_nascimento', 'num_telefone', 'char_endereco')
     data = {field: form.get(field, '').strip() or None for field in basic_fields}
     errors = []
@@ -43,6 +43,21 @@ def patient(form, baskets=False, editing=False):
     data['status'] = form.get('status', 'ATIVO')
     if data['status'] not in ('ATIVO', 'INATIVO'):
         errors.append('Selecione uma situação válida: ativo ou inativo.')
+    if medical:
+        for field in PATIENT_FIELDS[5:]:
+            data[field] = form.get(field, '').strip() or None
+            if len((data[field] or '').encode('utf-8')) > 2000:
+                errors.append('Cada campo clínico deve ocupar até 2000 bytes; reduza o texto.')
+    if medical or baskets:
+        data['data_obito'] = form.get('data_obito', '').strip() or None
+        if data['data_obito']:
+            try:
+                death = date.fromisoformat(data['data_obito'])
+                if death > date.today() or death < date.fromisoformat(data['dt_nascimento'] or ''):
+                    raise ValueError
+            except ValueError:
+                errors.append('O óbito deve ser uma data válida entre o nascimento e hoje.')
+            data['status'] = 'INATIVO'
     if baskets:
         frequency = form.get('frequencia_cesta', '').strip()
         try:

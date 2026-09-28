@@ -13,7 +13,8 @@ class ProductTests(unittest.TestCase):
         cls.config = {'TESTING': True, 'SECRET_KEY': 'test-' * 10,
                       'API_BASE_URL': 'https://example.invalid/ords/test/rcc/',
                       'ADMIN_USERNAME': 'operador', 'ADMIN_PASSWORD_HASH': generate_password_hash('senha-de-teste'),
-                      'ORDS_CESTAS_HABILITADAS': False}
+                      'ORDS_CESTAS_HABILITADAS': False, 'ORDS_DADOS_MEDICOS_HABILITADOS': False,
+                      'ORDS_SERVICOS_HABILITADOS': False, 'API_TOKEN': '', 'ORDS_CLIENT_ID': '', 'ORDS_CLIENT_SECRET': ''}
 
     def setUp(self):
         self.app = create_app(self.config)
@@ -122,8 +123,9 @@ class ProductTests(unittest.TestCase):
         self.client.post('/deletar/123', data={'csrf_token': self.token()})
         self.assertEqual(call.call_args.args, ('DELETE', 'pessoas/123'))
 
+    @patch('app.ords.collection', return_value=[])
     @patch('app.ords.call')
-    def test_basket_never_claims_success_without_persistence(self, call):
+    def test_basket_never_claims_success_without_persistence(self, call, collection):
         self.login()
         self.assertEqual(self.client.post('/renovar_cesta/123', data={'csrf_token': self.token()}).status_code, 409)
         call.assert_not_called()
@@ -147,7 +149,7 @@ class ProductTests(unittest.TestCase):
             create_app({**self.config, 'API_BASE_URL': ''})
         with self.assertRaises(RuntimeError):
             create_app({**self.config, 'SECRET_KEY': 'short'})
-        self.assertEqual(self.client.get('/ping').json['version'], '0.4.0-rc1')
+        self.assertEqual(self.client.get('/ping').json['version'], '0.5.0-rc1')
 
     @patch('app.ords.httpx.Client.request')
     def test_real_schema_field_mapping(self, request):

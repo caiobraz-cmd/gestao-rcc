@@ -71,12 +71,22 @@
         <h2>Cesta básica</h2>
         <p>Última entrega: {{ pessoa.dt_ultima_cesta or 'Nenhuma registrada' }}</p>
         <p>Frequência: {{ pessoa.num_frequencia_cesta or 'Não recebe' }}{% if pessoa.num_frequencia_cesta %} dias{% endif %}</p>
-        {% if pessoa.num_frequencia_cesta and not pessoa.data_obito %}
+        <p>Situação: <strong>{{ cesta.situacao }}</strong></p>
+        {% if cesta.proxima %}<p>Próxima entrega: {{ cesta.proxima }}{% if cesta.atraso %} — {{ cesta.atraso }} dias de atraso{% endif %}</p>{% endif %}
+        {% if cesta.pode_entregar %}
         <form method="post" action="{{ url_for('pessoa_bp.renovar_cesta', id=pessoa.seq_id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-primary" type="submit">Registrar entrega de cesta hoje</button>
         </form>
         {% endif %}
+        <h3>Histórico de entregas</h3>
+        {% if entregas %}
+        <table>
+            <thead><tr><th>Registro</th><th>Data</th><th>Intervalo na entrega</th></tr></thead>
+            <tbody>{% for entrega in entregas %}<tr><td>{{ entrega.id }}</td>
+                <td>{{ entrega.data_entrega }}</td><td>{{ entrega.frequencia_dias }} dias</td></tr>{% endfor %}</tbody>
+        </table>
+        {% else %}<p>Nenhuma entrega registrada.</p>{% endif %}
     </section>
     {% endif %}
     <hr style="margin: 2rem 0;">

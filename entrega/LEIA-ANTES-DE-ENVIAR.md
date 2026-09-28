@@ -1,13 +1,11 @@
-# Pacote atualizado — revisão HTTPX
+# Pacote 0.5.0-rc1 — cadastro completo e cestas
 
-Versão candidata: 0.4.0-rc1, revisão de 27/09/2026.
+Use gestao-rcc-0.5.0-rc1-candidata.zip: código, instruções, scripts Oracle, testes e evidências reais. O ZIP antigo 0.4.0-rc1 foi preservado.
 
-O ZIP contém código-fonte, iniciador Windows, instruções, configuração de exemplo, definições Oracle, testes e evidências. Não contém ambiente virtual, .env, histórico Git ou banco local de pacientes.
+Nesta instalação, campos clínicos e cestas estão habilitados e testados com o Oracle: 28 testes locais, 23 verificações reais e entrega pelo navegador.
 
-O bloqueio de conexão anterior foi resolvido nas verificações com HTTPX. Passaram 15 testes locais e 11 verificações com Oracle real, incluindo cadastro, edição, inativação e persistência após nova sessão. O cadastro fictício ID 21 ficou inativo. A pasta de evidências preserva também a tentativa anterior que falhou, identificada como histórica.
+O pacote não contém .env, credenciais, ambiente virtual, histórico Git ou instance/ACESSO-LOCAL.txt. Em outra máquina, configurar operador e cliente OAuth autorizado conforme README e docs/entrega/PROXIMA-VERSAO.md.
 
-Use este ZIP atualizado. Após extrair, abra INICIAR.cmd e crie seu usuário e senha na primeira execução. O arquivo .sha256.txt e MANIFESTO-SHA256.json identificam o conteúdo exato deste pacote, mesmo mantendo o número da versão candidata.
+Ainda é necessário demonstrar ao cliente e registrar seu aceite. Serviços continuam pendentes. Não apresentar como implantação pública de produção ou conclusão de todo o roadmap.
 
-Para finalizar a avaliação, ainda é necessário apresentar o produto ao cliente/usuário final e registrar a confirmação. Serviços, cestas e campos médicos continuam pendentes, conforme a documentação. O pacote não deve ser apresentado como versão 1.0 com todo o roadmap concluído.
-
-Para reconstruir o ZIP: .\.venv\Scripts\python.exe tools/empacotar.py.
+Reconstrução: .\.venv\Scripts\python.exe tools/empacotar.py. Confira o SHA256 junto ao ZIP e o manifesto interno.

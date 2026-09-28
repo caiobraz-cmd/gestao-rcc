@@ -10,9 +10,11 @@ class BaseConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     API_BASE_URL = os.environ.get('API_BASE_URL', '').strip()
     API_TOKEN = os.environ.get('API_TOKEN', '').strip()
+    ORDS_CLIENT_ID = os.environ.get('ORDS_CLIENT_ID', '').strip()
+    ORDS_CLIENT_SECRET = os.environ.get('ORDS_CLIENT_SECRET', '').strip()
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', '').strip()
     ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', '').strip()
-    APP_VERSION = '0.4.0-rc1'
+    APP_VERSION = '0.5.0-rc1'
     DEBUG = False
     TESTING = False
     MAX_CONTENT_LENGTH = 1024 * 1024
@@ -21,7 +23,7 @@ class BaseConfig:
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
     ORDS_CESTAS_HABILITADAS = os.environ.get('ORDS_CESTAS_HABILITADAS', 'false').lower() == 'true'
     ORDS_SERVICOS_HABILITADOS = os.environ.get('ORDS_SERVICOS_HABILITADOS', 'false').lower() == 'true'
-    ORDS_DADOS_MEDICOS_HABILITADOS = False
+    ORDS_DADOS_MEDICOS_HABILITADOS = os.environ.get('ORDS_DADOS_MEDICOS_HABILITADOS', 'false').lower() == 'true'
 
 class DevelopmentConfig(BaseConfig):
     pass
