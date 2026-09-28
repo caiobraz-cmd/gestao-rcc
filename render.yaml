@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: gestao-rcc
+    runtime: python
+    plan: free
+
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+
+    healthCheckPath: /ping
+
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: FLASK_ENV
+        value: production
+
+      - key: SECRET_KEY
+        generateValue: true
+
+      - key: API_BASE_URL
+        sync: false
+
+      - key: ORDS_CLIENT_ID
+        sync: false
+
+      - key: ORDS_CLIENT_SECRET
+        sync: false
+
+      - key: ADMIN_USERNAME
+        sync: false
+
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+
+      - key: ORDS_CESTAS_HABILITADAS
+        value: "true"
+
+      - key: ORDS_DADOS_MEDICOS_HABILITADOS
+        value: "true"
+
+      - key: ORDS_SERVICOS_HABILITADOS
+        value: "false"

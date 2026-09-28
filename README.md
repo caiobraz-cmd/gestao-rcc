@@ -65,6 +65,18 @@ python3 -m venv .venv
 .venv/bin/python run.py
 ~~~
 
+## Publicação temporária no Render
+
+A aplicação pode ser publicada como **Web Service Python** usando o Blueprint [render.yaml](render.yaml).
+
+- Build command: `pip install -r requirements.txt`.
+- Start command: `gunicorn run:app`.
+- Health check: `/ping`, público e sem login; verifica o processo, não a disponibilidade do Oracle.
+
+As configurações vêm de **environment variables**, sem necessidade de `.env` no Render. Na criação do Blueprint, informe os valores marcados como `sync: false`: `API_BASE_URL` (HTTPS, terminando em `/rcc-v2/`), `ORDS_CLIENT_ID`, `ORDS_CLIENT_SECRET`, `ADMIN_USERNAME` e `ADMIN_PASSWORD_HASH`. O hash deve ser fornecido pelo responsável; não há senha padrão. O Render gera `SECRET_KEY` automaticamente, e o Blueprint define `FLASK_ENV=production`.
+
+Credenciais, hashes reais, tokens e arquivos `.env` nunca devem ser versionados.
+
 ## Verificações
 
 ~~~powershell
