@@ -4,6 +4,16 @@ Todas as alteracoes relevantes realizadas no Sistema de Gestao RCC sao registrad
 
 **Nota de rastreabilidade:** Este CHANGELOG foi criado retrospectivamente em 2026 a partir do historico Git, codigo-fonte, documentacao e registros de Sprint disponiveis. Os registros anteriores a criacao deste arquivo representam mudancas reais identificadas no projeto, mesmo quando nao existia um CHANGELOG formal na epoca.
 
+## 0.5.0-rc1 — 27/09/2026 — integrada ao Oracle
+
+- Recuperados diagnóstico, tratamentos, medicamentos, alergias, observações e óbito, com validação e confirmação por leitura.
+- Agenda de cestas: primeira entrega, previsão, vencimento no dia, atraso, frequência de 1 a 365 dias e suspensão por inatividade ou óbito.
+- Entrega por endpoint dedicado; a aplicação exige confirmação no histórico e na última entrega do paciente.
+- Migração instalada e módulo ORDS protegido publicado. Histórico com uma entrega por paciente/dia e bloqueio de linha para concorrência.
+- OAuth com renovação automática; configuração privada local e recursos novos habilitados nesta instalação.
+- 28 testes locais e 23 verificações reais aprovados; concorrência retornou 201/409 e uma única entrega. Operação pelo navegador também confirmada.
+- Backup dos dois cadastros preexistentes mantido no Oracle. A entrega 0.4 não foi reempacotada.
+
 ## 0.4.0-rc1 — 26/09/2026 — candidata à homologação
 
 ### Revisão de conexão — 27/09/2026

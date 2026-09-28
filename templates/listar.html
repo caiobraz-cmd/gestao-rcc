@@ -72,6 +72,7 @@
                 <th>Nascimento</th>
                 <th>Telefone</th>
                 <th>Status</th>
+                {% if config.ORDS_CESTAS_HABILITADAS %}<th>Cesta básica</th>{% endif %}
                 <th>Ações</th>
             </tr>
         </thead>
@@ -92,6 +93,9 @@
                         <span class="badge">Situação não informada</span>
                     {% endif %}
                 </td>
+                {% if config.ORDS_CESTAS_HABILITADAS %}
+                <td>{{ pessoa.cesta.situacao }}{% if pessoa.cesta.proxima %}<br>{{ pessoa.cesta.proxima }}{% endif %}</td>
+                {% endif %}
                 <td class="acoes">
                     <a href="{{ url_for('pessoa_bp.detalhes', id=pessoa.seq_id) }}" class="btn btn-secondary" title="Ver Detalhes">
                         <i class="fa-solid fa-eye"></i>
@@ -99,7 +103,7 @@
                     <a href="{{ url_for('pessoa_bp.editar', id=pessoa.seq_id) }}" class="btn btn-secondary" title="Editar">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-                    {% if config.ORDS_SERVICOS_HABILITADOS %}
+                    {% if config.ORDS_SERVICOS_HABILITADOS and not config.ORDS_CESTAS_HABILITADAS %}
                     <form action="{{ url_for('pessoa_bp.deletar', id=pessoa.seq_id) }}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta pessoa?');">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-danger" title="Excluir"><i class="fa-solid fa-trash"></i></button>
@@ -109,7 +113,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="7" style="text-align: center; color: #64748b; padding: 2rem;">
+                <td colspan="{{ 8 if config.ORDS_CESTAS_HABILITADAS else 7 }}" style="text-align: center; color: #64748b; padding: 2rem;">
                     Nenhum paciente encontrado para esta consulta.
                 </td>
             </tr>

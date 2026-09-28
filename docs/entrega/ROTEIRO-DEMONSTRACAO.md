@@ -1,4 +1,4 @@
-# Demonstração ao cliente — Gestão RCC 0.4.0-rc1
+# Demonstração ao cliente — Gestão RCC 0.5.0-rc1
 
 ## Preparação
 
@@ -13,7 +13,7 @@ Confirmar base de teste e consentimento para criar registros fictícios. Seguir 
 5. Editar o nome acrescentando `EDITADO`, salvar e consultar novamente. Sair e entrar para confirmar que os dados não dependem da sessão.
 6. Tentar cadastrar um CPF com 11 dígitos iguais. Mostrar a mensagem de validação e confirmar que não surgiu novo paciente.
 7. Marcar o registro fictício como Inativo, salvar e conferir a mudança na lista. Não excluir registros existentes do cliente.
-8. Explicar limitações de serviços e cestas e o que será necessário para a próxima versão.
+8. Mostrar os campos clínicos fictícios, definir uma frequência de cesta, registrar a primeira entrega e mostrar histórico e próxima data. Explicar o bloqueio de entrega antecipada e a suspensão por inatividade/óbito. Serviços continuam pendentes.
 
 ## Evidências a guardar
 

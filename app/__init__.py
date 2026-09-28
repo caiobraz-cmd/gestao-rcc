@@ -23,6 +23,10 @@ def create_app(test_config=None):
         raise RuntimeError('SECRET_KEY deve ter pelo menos 32 caracteres aleatórios.')
     if app.config['SESSION_COOKIE_SECURE'] and address.scheme != 'https':
         raise RuntimeError('Produção requer API_BASE_URL com HTTPS.')
+    if (app.config['ORDS_DADOS_MEDICOS_HABILITADOS'] or app.config['ORDS_CESTAS_HABILITADAS']) and not app.testing:
+        credentials = app.config.get('API_TOKEN') or (app.config.get('ORDS_CLIENT_ID') and app.config.get('ORDS_CLIENT_SECRET'))
+        if not credentials or address.scheme != 'https' or not address.path.rstrip('/').endswith('/rcc-v2'):
+            raise RuntimeError('Cadastro completo e cestas exigem a API protegida /rcc-v2/ com HTTPS e credenciais ORDS. Consulte docs/entrega/PROXIMA-VERSAO.md.')
 
     def csrf_token():
         if '_csrf_token' not in session:
