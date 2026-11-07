@@ -40,4 +40,4 @@ services:
         value: "true"
 
       - key: ORDS_SERVICOS_HABILITADOS
-        value: "false"
+        value: "true"

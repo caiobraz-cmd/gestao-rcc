@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0-rc1 — serviços por paciente
+
+- Cadastro e consulta de serviços no Oracle, com histórico separado por paciente. A atualização 006 foi homologada em GESTAORCC.
+- O Blueprint do Render habilita o recurso; em serviços configurados manualmente é necessário atualizar a variável de ambiente.
+
+
 Todas as alteracoes relevantes realizadas no Sistema de Gestao RCC sao registradas neste documento.
 
 **Nota de rastreabilidade:** Este CHANGELOG foi criado retrospectivamente em 2026 a partir do historico Git, codigo-fonte, documentacao e registros de Sprint disponiveis. Os registros anteriores a criacao deste arquivo representam mudancas reais identificadas no projeto, mesmo quando nao existia um CHANGELOG formal na epoca.

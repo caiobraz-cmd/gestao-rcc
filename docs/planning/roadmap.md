@@ -1,5 +1,7 @@
 # Roadmap do Projeto
 
+**Retomada de 06/11/2026:** a versão publicada é `0.5.0-rc1`. Pacientes e cestas têm integração real; o login e a listagem via Render foram conferidos nesta retomada. A seção abaixo sobre 0.4 é histórica. O módulo de serviços foi [instalado e homologado no Oracle](../entrega/SERVICOS-HOMOLOGACAO.md); falta publicar a aplicação atualizada e conferir o fluxo no Render.
+
 > Atualização de 27/09/2026: a candidata 0.4.0-rc1 recebeu correções de configuração, autenticação e cadastro. A integração real com Oracle passou nas 11 verificações do fluxo de pacientes após adoção de HTTPX. Serviços e cestas continuam pendentes; a apresentação ao cliente também. Os compromissos abaixo para 1.0 não representam funcionalidades entregues. Consulte [estado atual da entrega](../entrega/ENTREGA-PRODUTO.md).
 
 ## Objetivo do roadmap

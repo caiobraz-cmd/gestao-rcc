@@ -2,7 +2,9 @@
 
 Sistema web de apoio à Rede de Combate ao Câncer, desenvolvido por Caio Braz e Osvaldo Mazoni Neto.
 
-**Versão candidata 0.5.0-rc1 — cadastro completo e cestas, ativados em 27/09/2026.** Migração instalada no Oracle, API protegida com OAuth, campos clínicos e histórico persistidos. Passaram 28 testes locais e 23 verificações com Oracle real, incluindo duas entregas simultâneas com apenas uma aceita. A entrega pelo navegador também foi confirmada. Consulte [Evidências reais da 0.5](docs/evidences/v05-oracle/README.md) e [Instalação da atualização](docs/entrega/PROXIMA-VERSAO.md).
+**Versão candidata 0.6.0-rc1:** cadastro e histórico de serviços por paciente. A integração foi [homologada no Oracle](docs/entrega/SERVICOS-HOMOLOGACAO.md).
+
+**Versão anterior 0.5.0-rc1 — cadastro completo e cestas, ativados em 27/09/2026.** Migração instalada no Oracle, API protegida com OAuth, campos clínicos e histórico persistidos. Passaram 28 testes locais e 23 verificações com Oracle real, incluindo duas entregas simultâneas com apenas uma aceita. A entrega pelo navegador também foi confirmada. Consulte [Evidências reais da 0.5](docs/evidences/v05-oracle/README.md) e [Instalação da atualização](docs/entrega/PROXIMA-VERSAO.md).
 
 A entrega anterior **0.4.0-rc1**, com cadastro básico testado no Oracle, permanece no ZIP de entrega original. Seus relatórios e capturas estão em [Evidências da 0.4](docs/evidences/produto/README.md); não comprovam a integração da 0.5. A apresentação ao cliente continua pendente em [Entrega do produto](docs/entrega/ENTREGA-PRODUTO.md).
 
@@ -10,7 +12,7 @@ A entrega anterior **0.4.0-rc1**, com cadastro básico testado no Oracle, perman
 
 Organizar o cadastro de pacientes e sua consulta. A integração usa Oracle ORDS, sem banco local substituto. Foram implementados login de operador configurável, consulta, busca, cadastro, edição e mudança de situação ativo/inativo. Cadastro, edição e inativação foram confirmados por novas leituras da API, inclusive após uma nova sessão.
 
-Diagnóstico, tratamentos, medicamentos, alergias, observações, óbito e cestas estão habilitados nesta instalação. A próxima entrega usa a frequência definida no cadastro, e cada entrega fica no histórico. Serviços continuam pendentes. Em outra instalação, é necessário configurar as credenciais próprias do cliente Oracle; elas não acompanham o ZIP nem o GitHub. Veja [Limitações](docs/entrega/LIMITACOES.md).
+Diagnóstico, tratamentos, medicamentos, alergias, observações, óbito e cestas estão habilitados nesta instalação. A próxima entrega usa a frequência definida no cadastro, e cada entrega fica no histórico. O módulo de serviços está instalado em GESTAORCC; a aplicação o exibe quando habilitado. Em outra instalação, é necessário configurar as credenciais próprias do cliente Oracle; elas não acompanham o ZIP nem o GitHub. Veja [Limitações](docs/entrega/LIMITACOES.md).
 
 ## Tecnologias e arquitetura
 
@@ -93,7 +95,7 @@ Os testes automatizados simulam respostas HTTP: validam a aplicação, mas não 
 - `ORDS_CLIENT_ID` e `ORDS_CLIENT_SECRET`: credenciais do cliente OAuth da API. Com elas, deixe `API_TOKEN` vazio; a renovação é automática e o token fica somente em memória.
 - `SECRET_KEY`: segredo aleatório de pelo menos 32 caracteres, gerado pelo configurador.
 - `ADMIN_USERNAME` e `ADMIN_PASSWORD_HASH`: operador desta instalação. Não há senha padrão.
-- `ORDS_SERVICOS_HABILITADOS=false`: só alterar após disponibilizar e testar o contrato de serviços.
+- `ORDS_SERVICOS_HABILITADOS=true`: habilita serviços no módulo com a atualização 006 instalada; mantenha desativado em bases sem os endpoints.
 - `ORDS_CESTAS_HABILITADAS=true` e `ORDS_DADOS_MEDICOS_HABILITADOS=true`: habilitados na instalação homologada com `/rcc-v2/`; em outra base, aplicar e validar a migração antes.
 - `FLASK_ENV=development`: seleção própria desta aplicação. Para produção, a configuração exige HTTPS e cookie seguro.
 

@@ -14,3 +14,4 @@ Um responsável Oracle deve criar um schema vazio, revisar os tamanhos/semântic
 Há chave UNIQUE em CPF e chave estrangeira de serviço para paciente. O banco observado usa `ON DELETE CASCADE`, portanto excluir um paciente diretamente na API pode apagar seu histórico de serviços. A aplicação mantém exclusão desabilitada no escopo atual e oferece inativação.
 
 Os handlers PUT e DELETE atuais retornam 200 sem verificar quantidade de linhas afetadas. A aplicação confirma a edição por nova leitura. A API não tem endpoint de serviços nem campos para cestas/dados médicos no módulo exportado.
+- Para preparar serviços no módulo v2 existente, consulte [o roteiro de homologação](../docs/entrega/SERVICOS-HOMOLOGACAO.md) antes de aplicar `006-ords-servicos.sql`.

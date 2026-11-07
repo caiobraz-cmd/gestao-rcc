@@ -108,7 +108,15 @@ class ProductTests(unittest.TestCase):
         self.assertEqual(self.client.post('/pessoa/123/servicos/novo', data={'ds_nome': 'a', 'csrf_token': self.token()}).status_code, 422)
         result = self.client.post('/pessoa/123/servicos/novo', data={'ds_nome': 'Atendimento teste', 'csrf_token': self.token()})
         self.assertEqual(result.status_code, 302)
-        self.assertEqual(call.call_args.kwargs['payload']['sq_idpaciente'], 123)
+        call.assert_called_with('POST', 'servicos/123/', payload={'ds_nome': 'Atendimento teste', 'char_descricao': None})
+        collection.return_value = [
+            {'sq_idpaciente': 123, 'ds_nome': 'Atendimento teste'},
+            {'sq_idpaciente': 124, 'ds_nome': 'Outro atendimento'},
+        ]
+        history = self.client.get(result.location).get_data(as_text=True)
+        collection.assert_called_with('servicos/123/')
+        self.assertIn('Atendimento teste', history)
+        self.assertNotIn('Outro atendimento', history)
 
     @patch('app.ords.collection')
     @patch('app.ords.call')
@@ -149,7 +157,7 @@ class ProductTests(unittest.TestCase):
             create_app({**self.config, 'API_BASE_URL': ''})
         with self.assertRaises(RuntimeError):
             create_app({**self.config, 'SECRET_KEY': 'short'})
-        self.assertEqual(self.client.get('/ping').json['version'], '0.5.0-rc1')
+        self.assertEqual(self.client.get('/ping').json['version'], '0.6.0-rc1')
 
     @patch('app.ords.httpx.Client.request')
     def test_real_schema_field_mapping(self, request):

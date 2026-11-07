@@ -5,8 +5,8 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.5.0-rc1'
-FILES = ['README.md', 'CHANGELOG.md', 'requirements.txt', '.env.example', '.gitignore', 'run.py', 'config.py', 'configurar.py', 'INICIAR.cmd']
+VERSION = '0.6.0-rc1'
+FILES = ['README.md', 'CHANGELOG.md', 'requirements.txt', '.env.example', '.gitignore', 'render.yaml', 'run.py', 'config.py', 'configurar.py', 'INICIAR.cmd']
 FOLDERS = ['app', 'templates', 'static', 'tests', 'tools', 'database', 'docs', 'src']
 ALLOWED = {'.py', '.md', '.txt', '.html', '.css', '.js', '.json', '.sql', '.png', '.jpg', '.jpeg', '.pdf', '.svg', '.ico'}
 
@@ -19,7 +19,7 @@ def main():
     files = sorted(set(files))
     folder = ROOT / 'entrega'
     folder.mkdir(exist_ok=True)
-    output = folder / f'gestao-rcc-{VERSION}-candidata.zip'
+    output = folder / f'gestao-rcc-{VERSION}-render-candidata.zip'
     manifest = {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     with ZipFile(output, 'w', ZIP_DEFLATED) as archive:
         for p in files:

@@ -14,7 +14,7 @@ class BaseConfig:
     ORDS_CLIENT_SECRET = os.environ.get('ORDS_CLIENT_SECRET', '').strip()
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', '').strip()
     ADMIN_PASSWORD_HASH = os.environ.get('ADMIN_PASSWORD_HASH', '').strip()
-    APP_VERSION = '0.5.0-rc1'
+    APP_VERSION = '0.6.0-rc1'
     DEBUG = False
     TESTING = False
     MAX_CONTENT_LENGTH = 1024 * 1024

@@ -1,5 +1,5 @@
 """Fluxos de pacientes e serviços usando somente Oracle ORDS."""
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from app import ords
 from app.routes.auth_routes import login_required
@@ -136,7 +136,7 @@ def deletar(id):
         if baskets_enabled() or not current_app.config['ORDS_SERVICOS_HABILITADOS']:
             flash('Exclusão indisponível até validar o histórico de serviços. Use a situação Inativo para preservar o cadastro.', 'warning')
             return redirect(url_for('pessoa_bp.editar', id=id))
-        services = ords.collection('servicos/', {'pessoa_id': id})
+        services = ords.collection(f'servicos/{id}/')
         if any(str(s.get('sq_idpaciente')) == str(id) for s in services):
             flash('Não é possível excluir um paciente com serviços registrados. Preserve seu histórico.', 'warning')
             return redirect(url_for('pessoa_bp.detalhes', id=id))
@@ -151,7 +151,7 @@ def deletar(id):
 def detalhes(id):
     try:
         person = item(id)
-        services = ords.collection('servicos/', {'pessoa_id': id}) if current_app.config['ORDS_SERVICOS_HABILITADOS'] else []
+        services = ords.collection(f'servicos/{id}/') if current_app.config['ORDS_SERVICOS_HABILITADOS'] else []
         services = [s for s in services if str(s.get('sq_idpaciente')) == str(id)]
         deliveries = ords.collection(f'cestas/{id}/') if baskets_enabled() else []
         deliveries = [d for d in deliveries if str(d.get('pessoa_id')) == str(id)]
@@ -179,8 +179,7 @@ def novo_servico(id):
             status = 422
         else:
             try:
-                ords.call('POST', 'servicos/', payload={'ds_nome': name, 'char_descricao': description or None,
-                          'dt_dataservico': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'sq_idpaciente': id})
+                ords.call('POST', f'servicos/{id}/', payload={'ds_nome': name, 'char_descricao': description or None})
                 flash('Serviço registrado. Confira o histórico do paciente.', 'success')
                 return redirect(url_for('pessoa_bp.detalhes', id=id))
             except ords.APIError as error:

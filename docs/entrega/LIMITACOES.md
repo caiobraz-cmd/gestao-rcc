@@ -2,7 +2,7 @@
 
 1. **Execução local:** servidor de desenvolvimento Flask; não é publicação pronta para produção.
 2. **Internet e Oracle:** necessários para todos os cadastros e entregas. Após falha de conexão, consultar o registro antes de repetir uma gravação.
-3. **Serviços:** sem endpoints na API nova, permanecem desativados.
+3. **Serviços:** exigem a atualização 006 e a flag habilitada. O fluxo contempla cadastro e consulta, sem edição ou exclusão do histórico.
 4. **Um operador por instalação:** sem múltiplos perfis ou recuperação de senha. O histórico identifica data e frequência, não o operador humano.
 5. **Cestas:** sem estoque, entrega antecipada/retroativa ou correção de histórico pela interface. A equipe define quem recebe e a frequência.
 6. **API antiga:** /rcc-v2/ exige OAuth e recusou acesso anônimo. O módulo legado /rcc/ continua com acesso público aos dados básicos. Revisar sua proteção antes de usar dados reais; a base atual foi declarada fictícia pelo responsável.
