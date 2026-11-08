@@ -12,6 +12,8 @@ def create_app(test_config=None):
     app.config.from_object(ProductionConfig if os.environ.get('FLASK_ENV') == 'production' else DevelopmentConfig)
     if test_config:
         app.config.update(test_config)
+    from app.access_limits import AttemptLimiter
+    app.extensions['access_limiter'] = AttemptLimiter()
     missing = [key for key in ('SECRET_KEY', 'API_BASE_URL', 'ADMIN_USERNAME', 'ADMIN_PASSWORD_HASH') if not app.config.get(key)]
     if missing:
         raise RuntimeError('Configure ' + ', '.join(missing) + '. Execute python configurar.py; consulte o README.')
@@ -43,7 +45,12 @@ def create_app(test_config=None):
                 return render_template('erro.html', titulo='Formulário expirado',
                     mensagem='O formulário expirou ou é inválido. Volte à página e tente novamente.'), 400
 
-    from app.routes.auth_routes import auth_bp
+    from app.routes.auth_routes import auth_bp, is_admin
+    from app.routes.admin_routes import admin_bp
+    from app.routes.relatorios_routes import relatorios_bp
+    app.register_blueprint(relatorios_bp, url_prefix='/relatorios')
+    app.jinja_env.globals['is_admin'] = is_admin
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     from app.routes.pessoa_routes import pessoa_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(pessoa_bp)

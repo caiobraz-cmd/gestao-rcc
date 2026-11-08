@@ -7,9 +7,21 @@ O acesso ao Gestão RCC é separado do painel Oracle APEX.
 1. Abra `instance/ACESSO-LOCAL.txt` dentro da pasta do projeto para consultar seu usuário e sua senha. Esse arquivo é privado: não envie ao GitHub ou ao professor.
 2. Abra **INICIAR.cmd** e mantenha a janela aberta. Se o sistema já estiver rodando, não abra uma segunda cópia.
 3. Acesse **http://127.0.0.1:5000** e use os dados do arquivo.
-4. Confira **0.5.0-rc1** no rodapé. Os campos completos e as cestas já estão configurados com o Oracle.
+4. No menu, clique em **Administração**. A conta original desta instalação é o administrador, mesmo que o login se chame `operador`.
 
-## Em outro computador — primeira instalação
+## Cadastrar uma pessoa da equipe
+
+1. Em **Administração → Cadastrar operador**, informe nome, login e uma senha de pelo menos 12 caracteres. Clique em **Cadastrar operador**.
+2. Entregue o login e a senha à pessoa por um canal privado. Ela entra pelo endereço da instalação com a própria conta; não precisa baixar arquivos, usar terminal nem acessar o Oracle APEX.
+3. Em **Contas da equipe**, use **Desativar**, **Reativar** ou **Redefinir senha**. Desativar ou trocar a senha invalida as sessões anteriores na próxima requisição protegida. Operadores não podem administrar contas nem abrir o painel pela URL.
+
+O cadastro acima dá acesso ao sistema. Para cadastrar alguém atendido pela rede, use **Novo paciente**. O endereço `127.0.0.1` funciona apenas no computador que está executando o sistema; esta revisão do painel não foi publicada no Render.
+
+## Trocar a própria senha — operadores
+
+No menu **Minha senha**, informe a senha atual, a nova senha e sua confirmação. Após salvar, entre novamente. As sessões antigas deixam de funcionar na próxima requisição protegida. Se esquecer a senha atual, peça ao administrador para redefini-la no painel. A conta administrativa inicial continua na configuração privada e não usa essa tela.
+
+## Para o responsável técnico — primeira instalação em outro computador
 
 1. Abra a pasta `C:\Users\osval\Desktop\gestao-rcc` no Explorador de Arquivos. Se estiver usando o ZIP, extraia primeiro e abra a pasta extraída.
 2. Dê dois cliques em **INICIAR.cmd**. O Windows pode mostrar apenas **INICIAR**. Aguarde a preparação terminar e mantenha essa janela aberta.

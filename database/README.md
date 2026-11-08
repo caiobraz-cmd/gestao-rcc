@@ -1,5 +1,9 @@
 # Fontes da dependência Oracle
 
+- `009-rastreabilidade.sql`, `009-ords-operacoes.sql` e `009-consulta-operacoes.sql`: instalados em 07/11/2026, nessa ordem, acrescentam registro transacional de criação/alteração de pacientes e entrega de cestas. Não reaplicar 005 depois desta atualização. A consulta unifica esses eventos com serviços, sem reconstruir alterações antigas.
+
+- `008-rastreabilidade.sql` e `008-ords-rastreabilidade.sql`: atualização incremental instalada em 07/11/2026; adiciona autoria na mesma transação da criação do serviço. A definição anterior do POST foi conferida e preservada em arquivo privado antes da troca. Não repetir nem reaplicar 006 sobre esta atualização.
+
 - `ords-exportado.sql`: exportação original do módulo `gestao_rcc`, realizada pelo painel Oracle APEX em 26/09/2026. Contém os handlers de pacientes existentes; não contém registros nem credenciais.
 - `schema.sql`: estrutura lógica das tabelas PESSOA e SERVICO_PRESTADO, obtida por leitura de DBMS_METADATA. Foram retirados nomes de schema, tablespace e opções de armazenamento para facilitar a revisão. Não inclui outras tabelas do workspace que não são utilizadas pelo escopo atual.
 

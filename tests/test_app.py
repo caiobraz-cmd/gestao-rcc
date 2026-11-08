@@ -106,9 +106,17 @@ class ProductTests(unittest.TestCase):
         self.assertEqual(self.client.post('/editar/123', data=self.form()).status_code, 302)
         self.assertEqual(self.client.get('/pessoa/123/').status_code, 200)
         self.assertEqual(self.client.post('/pessoa/123/servicos/novo', data={'ds_nome': 'a', 'csrf_token': self.token()}).status_code, 422)
-        result = self.client.post('/pessoa/123/servicos/novo', data={'ds_nome': 'Atendimento teste', 'csrf_token': self.token()})
+        def reply(method,path,**kwargs):
+            if path.startswith('registros-servicos/'):
+                return {'registro':path.split('/')[1],'pessoa_id':123,'autor':'operador'}
+            return dict(self.person)
+        call.side_effect = reply
+        result = self.client.post('/pessoa/123/servicos/novo', data={'ds_nome': 'Atendimento teste', 'csrf_token': self.token(), 'autor':'falsificado','perfil':'operador'})
         self.assertEqual(result.status_code, 302)
-        call.assert_called_with('POST', 'servicos/123/', payload={'ds_nome': 'Atendimento teste', 'char_descricao': None})
+        write = next(c for c in reversed(call.call_args_list) if c.args[0] == 'POST')
+        self.assertEqual(write.kwargs['payload']['autor'],'operador')
+        self.assertEqual(write.kwargs['payload']['perfil'],'admin')
+        self.assertEqual(len(write.kwargs['payload']['registro']),32)
         collection.return_value = [
             {'sq_idpaciente': 123, 'ds_nome': 'Atendimento teste'},
             {'sq_idpaciente': 124, 'ds_nome': 'Outro atendimento'},
@@ -157,7 +165,7 @@ class ProductTests(unittest.TestCase):
             create_app({**self.config, 'API_BASE_URL': ''})
         with self.assertRaises(RuntimeError):
             create_app({**self.config, 'SECRET_KEY': 'short'})
-        self.assertEqual(self.client.get('/ping').json['version'], '0.6.0-rc1')
+        self.assertEqual(self.client.get('/ping').json['version'], '0.7.0-rc1')
 
     @patch('app.ords.httpx.Client.request')
     def test_real_schema_field_mapping(self, request):

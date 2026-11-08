@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+{% block conteudo %}
+<div class="admin-intro"><small>GESTÃO DE ACESSOS</small><h1>Administração</h1>
+<p>Crie contas para a equipe e acompanhe quem pode acessar os pacientes.</p>
+<a class="btn btn-primary" href="{{ url_for('admin_bp.rastreabilidade') }}"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Rastreabilidade</a>
+<a class="btn btn-secondary" href="{{ url_for('admin_bp.registros_servicos') }}">Detalhes de serviços</a></div>
+<div class="info-grid"><div class="info-item"><strong>Administrador</strong><span>{{ session.usuario_nome }}</span></div>
+<div class="info-item"><strong>Operadores ativos</strong><span>{{ contas|selectattr('ativo','equalto',1)|list|length }}</span></div>
+<div class="info-item"><strong>Operadores desativados</strong><span>{{ contas|selectattr('ativo','equalto',0)|list|length }}</span></div></div>
+<section class="admin-section"><h2>Cadastrar operador</h2>
+<form method="post" action="{{ url_for('admin_bp.index') }}" class="form-card">{{ csrf() }}
+<div class="form-group"><label for="nome">Nome da pessoa</label><input id="nome" name="nome" required maxlength="120" value="{{ request.form.get('nome','') }}"></div>
+<div class="form-group"><label for="login">Login de acesso</label><input id="login" name="login" autocomplete="off" minlength="3" maxlength="40" required placeholder="Ex.: ana.silva" value="{{ request.form.get('login','') }}"></div>
+<div class="form-group full-width"><label for="senha">Senha de acesso</label><input type="password" id="senha" name="senha" minlength="12" maxlength="128" required autocomplete="new-password" placeholder="Pelo menos 12 caracteres"></div>
+<div class="form-actions"><button class="btn btn-primary">Cadastrar operador</button></div></form></section>
+<section class="admin-section"><h2>Contas da equipe</h2>
+{% for c in contas %}<article class="admin-account">
+<div><strong>{{ c.nome }}</strong><div>{{ c.login }} · Operador</div></div>
+<span class="badge {{ 'badge-active' if c.ativo else 'badge-death' }}">{{ 'Ativo' if c.ativo else 'Desativado' }}</span>
+<form method="post" action="{{ url_for('admin_bp.acesso',login=c.login) }}">{{ csrf() }}<button class="btn btn-secondary" name="acao" value="{{ 'desativar' if c.ativo else 'ativar' }}">{{ 'Desativar' if c.ativo else 'Reativar' }}</button></form>
+<details><summary>Redefinir senha</summary><form class="form-group" method="post" action="{{ url_for('admin_bp.acesso',login=c.login) }}">{{ csrf() }}
+<label for="pw-{{ c.login }}">Nova senha para {{ c.login }}</label><input id="pw-{{ c.login }}" type="password" name="senha" autocomplete="new-password" minlength="12" maxlength="128" required>
+<button class="btn btn-primary" name="acao" value="senha">Salvar nova senha</button></form></details>
+</article>{% else %}<p>Nenhum operador cadastrado. Use o formulário acima para adicionar a primeira pessoa da equipe.</p>{% endfor %}</section>
+{% endblock %}

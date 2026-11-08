@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<div class="admin-intro"><small>MINHA CONTA</small><h1>Alterar senha</h1>
+<p>Atualize a senha de acesso de <strong>{{ session.usuario_nome }}</strong>.</p></div>
+<section class="admin-section password-settings">
+<p>Escolha uma senha de 12 a 128 caracteres. Após salvar, será necessário entrar novamente em todos os dispositivos.</p>
+<form method="post" class="form-card">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="form-group full-width"><label for="atual">Senha atual</label><input id="atual" type="password" name="senha_atual" autocomplete="current-password" required></div>
+<div class="form-group full-width"><label for="nova">Nova senha</label><input id="nova" type="password" name="nova_senha" autocomplete="new-password" minlength="12" maxlength="128" required></div>
+<div class="form-group full-width"><label for="confirmacao">Confirme a nova senha</label><input id="confirmacao" type="password" name="confirmacao" autocomplete="new-password" minlength="12" maxlength="128" required></div>
+<div class="form-actions"><a class="btn btn-secondary" href="{{ url_for('pessoa_bp.listar') }}">Cancelar</a><button class="btn btn-primary">Salvar nova senha</button></div>
+</form></section>
+{% endblock %}

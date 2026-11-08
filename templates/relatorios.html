@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<div class="header-action"><div><h1>Relatórios</h1><p>Visão geral do atendimento da rede</p></div>
+<a class="btn btn-primary" href="{{ url_for('relatorios_bp.index',inicio=inicio,fim=fim,formato='csv') }}">Baixar resumo CSV</a></div>
+<form method="get" class="form-card">
+<div class="form-group"><label for="inicio">Data inicial</label><input id="inicio" name="inicio" type="date" value="{{ inicio }}" required></div>
+<div class="form-group"><label for="fim">Data final</label><input id="fim" name="fim" type="date" value="{{ fim }}" required></div>
+<div class="form-actions"><button class="btn btn-primary">Gerar relatório</button></div></form>
+<h2>Movimentação no período</h2><p>De {{ inicio }} a {{ fim }}, incluindo as duas datas.</p>
+<div class="info-grid"><div class="info-item"><strong>Cestas entregues</strong><span>{{ dados.cestas }}</span></div>
+<div class="info-item"><strong>Serviços registrados</strong><span>{{ dados.servicos }}</span></div></div>
+<h2>Pacientes — situação atual</h2><p>Estes números representam o cadastro de hoje, independentemente do período selecionado.</p>
+<div class="info-grid">{% for key,label in [('total','Total cadastrado'),('ativos','Ativos'),('inativos','Inativos'),('outros','Outras situações')] %}
+<div class="info-item"><strong>{{ label }}</strong><span>{{ dados[key] }}</span></div>{% endfor %}</div>
+<h2>Movimentação por dia</h2>
+<div class="audit-table"><table><thead><tr><th>Data</th><th>Cestas entregues</th><th>Serviços registrados</th></tr></thead>
+<tbody>{% for row in dados.dias %}<tr><td>{{ row.data }}</td><td>{{ row.entrega }}</td><td>{{ row.servico }}</td></tr>
+{% else %}<tr><td colspan="3">Nenhuma entrega ou serviço registrado neste período.</td></tr>{% endfor %}</tbody></table></div>
+<p>Gerado em {{ gerado }} (Brasília). O resumo inclui registros antigos, mesmo sem autoria. Não inclui diagnósticos, CPF nem dados de contato.</p>
+{% endblock %}

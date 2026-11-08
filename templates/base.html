@@ -24,7 +24,10 @@
             <ul>
                 <li><span style="color: var(--text-muted); margin-right: 15px;">Olá, {{ session.get('usuario_nome') }}</span></li>
                 <li><a href="{{ url_for('pessoa_bp.listar') }}"><i class="fa-solid fa-users"></i> Pacientes</a></li>
-                <li><a href="{{ url_for('pessoa_bp.novo') }}" class="nav-btn"><i class="fa-solid fa-plus"></i> Novo Cadastro</a></li>
+                <li><a href="{{ url_for('pessoa_bp.novo') }}" class="nav-btn"><i class="fa-solid fa-plus"></i> Novo paciente</a></li>
+                {% if is_admin() %}<li><a href="{{ url_for('admin_bp.index') }}"><i class="fa-solid fa-user-shield"></i> Administração</a></li>{% endif %}
+                {% if is_admin() %}<li><a href="{{ url_for('relatorios_bp.index') }}"><i class="fa-solid fa-chart-column"></i> Relatórios</a></li>{% endif %}
+                {% if session.get('perfil') == 'operador' %}<li><a href="{{ url_for('auth_bp.senha') }}"><i class="fa-solid fa-key"></i> Minha senha</a></li>{% endif %}
                 <li><form action="{{ url_for('auth_bp.logout') }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn btn-secondary" type="submit">Sair</button>

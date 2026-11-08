@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0-rc1 — 08/11/2026
+
+- Painel administrativo, operadores individuais, troca de senha e limite local de tentativas.
+- Rastreabilidade transacional de pacientes, cestas e serviços no Oracle, com consulta administrativa.
+- Busca azul ao lado do campo.
+- Flask 3.1.3, Werkzeug 3.1.9 e python-dotenv 1.2.2 após auditoria das dependências. Relatórios em docs/evidences/seguranca.
+- Relatórios exclusivos do administrador: situação atual dos pacientes, cestas e serviços por período, detalhamento diário e CSV agregado.
+
 ## 0.6.0-rc1 — serviços por paciente
 
 - Cadastro e consulta de serviços no Oracle, com histórico separado por paciente. A atualização 006 foi homologada em GESTAORCC.

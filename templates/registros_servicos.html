@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<div class="header-action"><h1>Registros de serviços</h1><a class="btn btn-secondary" href="{{ url_for('admin_bp.index') }}">Voltar à administração</a></div>
+<p>Confira quando cada serviço foi registrado e qual conta realizou a operação. Horários de Brasília.</p>
+<form method="get" role="search" class="form-group patient-search">
+<label for="busca">Buscar por paciente, serviço ou responsável</label>
+<div class="search-controls"><input id="busca" name="q" maxlength="120" value="{{ busca }}"><button class="btn btn-primary">Buscar</button></div>
+<a href="{{ url_for('admin_bp.registros_servicos') }}">Limpar busca</a></form>
+<div class="audit-table"><table>
+<thead><tr><th>Serviço nº</th><th>Quando</th><th>Paciente</th><th>Serviço</th><th>Registrado por</th></tr></thead>
+<tbody>{% for r in registros %}<tr>
+<td>{{ r.servico_id }}</td><td>{{ r.quando }}</td>
+<td><a href="{{ url_for('pessoa_bp.detalhes',id=r.pessoa_id) }}">{{ r.paciente }}</a></td>
+<td>{{ r.servico }}</td><td>{{ r.autor or 'Não identificado (registro anterior)' }}{% if r.autor %}<br><small>{{ 'Administrador' if r.perfil == 'admin' else 'Operador' }}</small>{% endif %}</td>
+</tr>{% else %}<tr><td colspan="5">Nenhum registro encontrado para esta busca.</td></tr>{% endfor %}</tbody></table></div>
+<div class="form-actions">
+{% if pagina > 1 %}<a class="btn btn-secondary" href="{{ url_for('admin_bp.registros_servicos',q=busca,pagina=pagina-1) }}">Anterior</a>{% endif %}
+<span>Página {{ pagina }}</span>
+{% if mais %}<a class="btn btn-primary" href="{{ url_for('admin_bp.registros_servicos',q=busca,pagina=pagina+1) }}">Próxima</a>{% endif %}
+</div>
+{% endblock %}

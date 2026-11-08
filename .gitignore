@@ -23,6 +23,7 @@ instance/
 # IDEs
 .vscode/
 .idea/
+.codex-remote-attachments/
 *.swp
 *.swo
 *~

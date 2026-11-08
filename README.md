@@ -2,13 +2,19 @@
 
 Sistema web de apoio à Rede de Combate ao Câncer, desenvolvido por Caio Braz e Osvaldo Mazoni Neto.
 
-**Versão candidata 0.6.0-rc1:** cadastro e histórico de serviços por paciente. A integração foi [homologada no Oracle](docs/entrega/SERVICOS-HOMOLOGACAO.md).
+**Versão candidata 0.7.0-rc1:** contas individuais, painel administrativo, rastreabilidade de pacientes/cestas/serviços e relatórios agregados com filtro de período e CSV. As migrações 006 a 009 estão instaladas em GESTAORCC; em outra base, o responsável deve instalá-las na ordem antes de usar esta versão.
+
+**Relatórios:** entre como administrador e abra **Relatórios** no menu. Pacientes representam a situação atual; entregas e serviços respeitam as duas datas selecionadas. Dados incompletos ou falha na API impedem a geração, evitando totais parciais. [Detalhes e limites](docs/entrega/RELATORIOS.md).
 
 **Versão anterior 0.5.0-rc1 — cadastro completo e cestas, ativados em 27/09/2026.** Migração instalada no Oracle, API protegida com OAuth, campos clínicos e histórico persistidos. Passaram 28 testes locais e 23 verificações com Oracle real, incluindo duas entregas simultâneas com apenas uma aceita. A entrega pelo navegador também foi confirmada. Consulte [Evidências reais da 0.5](docs/evidences/v05-oracle/README.md) e [Instalação da atualização](docs/entrega/PROXIMA-VERSAO.md).
 
 A entrega anterior **0.4.0-rc1**, com cadastro básico testado no Oracle, permanece no ZIP de entrega original. Seus relatórios e capturas estão em [Evidências da 0.4](docs/evidences/produto/README.md); não comprovam a integração da 0.5. A apresentação ao cliente continua pendente em [Entrega do produto](docs/entrega/ENTREGA-PRODUTO.md).
 
 ## Objetivo e escopo
+
+**Rastreabilidade (revisão local):** em **Administração → Rastreabilidade**, consulte cadastro/alteração de pacientes, entregas de cestas e serviços, com horário, responsável, busca e filtros. As migrações 008 e 009 já foram instaladas em GESTAORCC; não repetir. [Verificações e limites](docs/evidences/rastreabilidade/README.md).
+
+**Painel administrativo (revisão local):** entre com a conta administrativa já configurada e abra **Administração** para cadastrar operadores, redefinir senhas ou suspender acessos. Os operadores entram pela tela normal e não precisam instalar o projeto nem usar terminal. As contas ficam no Oracle; as migrações `007-contas.sql` e `007-ords-contas.sql` já foram instaladas em GESTAORCC. Não execute novamente. Veja o [tutorial de acesso](docs/entrega/TUTORIAL-LOGIN.md).
 
 Organizar o cadastro de pacientes e sua consulta. A integração usa Oracle ORDS, sem banco local substituto. Foram implementados login de operador configurável, consulta, busca, cadastro, edição e mudança de situação ativo/inativo. Cadastro, edição e inativação foram confirmados por novas leituras da API, inclusive após uma nova sessão.
 

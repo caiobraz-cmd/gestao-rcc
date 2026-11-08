@@ -1,7 +1,9 @@
 """Fluxos de pacientes e serviços usando somente Oracle ORDS."""
 from datetime import date, timedelta
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
+from uuid import uuid4
 from app import ords
+from app.rastreabilidade import autoria, confirmar
 from app.routes.auth_routes import login_required
 from app.validation import PATIENT_FIELDS, patient
 from app.cestas import agenda, hoje
@@ -81,12 +83,14 @@ def novo():
                 if duplicate(data['num_cpf']):
                     errors.append('Já existe um paciente com este CPF.')
                 else:
-                    ords.call('POST', 'pessoas/', payload=data)
+                    meta = autoria()
+                    ords.call('POST', 'pessoas/', payload={**data, **meta})
                     saved = [row for row in ords.collection('pessoas/')
                              if ''.join(c for c in str(row.get('num_cpf') or '') if c.isdigit()) == data['num_cpf']]
                     if len(saved) != 1 or not saved[0].get('seq_id'):
                         raise ords.APIError('O Oracle recebeu o cadastro, mas a leitura de confirmação falhou. Consulte a listagem antes de repetir.')
                     verify_saved(saved[0], data)
+                    confirmar(meta, saved[0]['seq_id'], 'cadastro')
                     flash('Paciente cadastrado e confirmado no Oracle.', 'success')
                     return redirect(url_for('pessoa_bp.detalhes', id=saved[0]['seq_id']))
             except ords.APIError as error:
@@ -113,8 +117,10 @@ def editar(id):
                 if duplicate(data['num_cpf'], exclude=id):
                     errors.append('Já existe outro paciente com este CPF.')
                 else:
-                    ords.call('PUT', f'pessoas/{id}', payload=data)
+                    meta = autoria()
+                    ords.call('PUT', f'pessoas/{id}', payload={**data, **meta})
                     verify_saved(item(id), data)
+                    confirmar(meta, id, 'alteracao')
                     flash('Paciente atualizado e confirmado no Oracle.', 'success')
                     return redirect(url_for('pessoa_bp.detalhes', id=id))
             except ords.APIError as error:
@@ -179,7 +185,13 @@ def novo_servico(id):
             status = 422
         else:
             try:
-                ords.call('POST', f'servicos/{id}/', payload={'ds_nome': name, 'char_descricao': description or None})
+                registro = uuid4().hex
+                ords.call('POST', f'servicos/{id}/', payload={'ds_nome': name, 'char_descricao': description or None,
+                          'registro': registro, 'autor': session['usuario_nome'], 'perfil': session['perfil']})
+                confirmation = ords.call('GET', f'registros-servicos/{registro}/')
+                if (confirmation.get('registro') != registro or str(confirmation.get('pessoa_id')) != str(id)
+                        or confirmation.get('autor') != session['usuario_nome']):
+                    raise ords.APIError('Não foi possível confirmar o registro do serviço. Consulte o histórico antes de repetir.')
                 flash('Serviço registrado. Confira o histórico do paciente.', 'success')
                 return redirect(url_for('pessoa_bp.detalhes', id=id))
             except ords.APIError as error:
@@ -201,12 +213,14 @@ def renovar_cesta(id):
             return redirect(url_for('pessoa_bp.detalhes', id=id))
         today = hoje().isoformat()
         # Operação dedicada: nunca regrava dados pessoais para entregar uma cesta.
-        ords.call('POST', f'cestas/{id}/', payload={'data_entrega': today})
+        meta = autoria()
+        ords.call('POST', f'cestas/{id}/', payload={'data_entrega': today, **meta})
         deliveries = ords.collection(f'cestas/{id}/')
         confirmed = [d for d in deliveries if str(d.get('pessoa_id')) == str(id)
                      and str(d.get('data_entrega', ''))[:10] == today and d.get('id')]
         if len(confirmed) != 1 or item(id).get('dt_ultima_cesta') != today:
             raise ords.APIError('A API respondeu, mas a data da cesta não foi persistida. Avise o responsável.')
+        confirmar(meta, id, 'entrega')
         flash('Entrega da cesta registrada e confirmada no Oracle.', 'success')
         return redirect(url_for('pessoa_bp.detalhes', id=id))
     except (ValueError, TypeError):

@@ -57,10 +57,12 @@
         </a>
     </div>
 
-    <form method="get" class="form-group" role="search">
+    <form method="get" class="form-group patient-search" role="search">
         <label for="busca">Buscar por nome ou CPF</label>
-        <input id="busca" name="q" value="{{ busca }}">
-        <button class="btn btn-secondary" type="submit">Buscar</button>
+        <div class="search-controls">
+        <input id="busca" name="q" value="{{ busca }}" placeholder="Digite o nome ou CPF">
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Buscar</button>
+        </div>
         <a href="{{ url_for('pessoa_bp.listar') }}">Limpar busca</a>
     </form>
     <table>

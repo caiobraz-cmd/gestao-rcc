@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<div class="header-action"><h1>Rastreabilidade</h1><a class="btn btn-secondary" href="{{ url_for('admin_bp.index') }}">Voltar à administração</a></div>
+<p>Cadastros, alterações de pacientes, entregas de cestas e registros de serviços. Horários de Brasília.</p>
+<form method="get" role="search" class="form-card">
+<div class="form-group"><label for="busca">Paciente ou responsável</label><input id="busca" name="q" value="{{ busca }}" maxlength="120"></div>
+<div class="form-group"><label for="tipo">Tipo de operação</label><select id="tipo" name="tipo"><option value="">Todas as operações</option>{% for key,label in tipos.items() %}<option value="{{ key }}" {% if tipo==key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+<div class="form-actions"><a class="btn btn-secondary" href="{{ url_for('admin_bp.rastreabilidade') }}">Limpar filtros</a><button class="btn btn-primary">Buscar</button></div>
+</form>
+<p>Alterações anteriores à ativação não são reconstruídas. Cestas e serviços antigos aparecem sem autoria; o horário de cestas antigas pode não ter sido registrado.</p>
+<div class="audit-table"><table><thead><tr><th>Quando</th><th>Operação</th><th>Paciente</th><th>Responsável</th><th>Referência</th></tr></thead><tbody>
+{% for r in registros %}<tr><td>{{ r.quando }}</td><td>{{ tipos.get(r.operacao,r.operacao) }}</td>
+<td><a href="{{ url_for('pessoa_bp.detalhes',id=r.pessoa_id) }}">{{ r.paciente }}</a></td>
+<td>{{ r.autor or 'Não identificado' }}{% if r.autor %}<br><small>{{ 'Administrador' if r.perfil=='admin' else 'Operador' }}</small>{% endif %}</td>
+<td>{{ r.referencia or '—' }}</td></tr>{% else %}<tr><td colspan="5">Nenhuma operação encontrada.</td></tr>{% endfor %}
+</tbody></table></div>
+<div class="form-actions">{% if pagina>1 %}<a class="btn btn-secondary" href="{{ url_for('admin_bp.rastreabilidade',q=busca,tipo=tipo,pagina=pagina-1) }}">Anterior</a>{% endif %}
+<span>Página {{ pagina }}</span>{% if mais %}<a class="btn btn-primary" href="{{ url_for('admin_bp.rastreabilidade',q=busca,tipo=tipo,pagina=pagina+1) }}">Próxima</a>{% endif %}</div>
+{% endblock %}

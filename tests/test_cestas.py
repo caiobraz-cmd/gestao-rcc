@@ -54,7 +54,7 @@ class ExtendedFlowTests(unittest.TestCase):
         self.app = create_app(self.config)
         self.client = self.app.test_client()
         with self.client.session_transaction() as session:
-            session['usuario_id'] = 1
+            session.update(usuario_id='admin', usuario_nome='operador', perfil='admin')
             session['_csrf_token'] = 'teste'
         self.person = {'seq_id': 1, 'ds_nome': 'TESTE', 'num_cpf': '52998224725',
                        'dt_nascimento': '1990-01-01', 'status': 'ATIVO', 'num_frequencia_cesta': 7}
@@ -86,12 +86,20 @@ class ExtendedFlowTests(unittest.TestCase):
     @patch('app.ords.call')
     def test_delivery_verified_in_history_and_patient(self, call, collection):
         today = hoje().isoformat()
-        call.side_effect = [dict(self.person), None, {**self.person, 'dt_ultima_cesta': today}]
+        def response(method,path,**kwargs):
+            if method == 'POST':
+                self.audit = kwargs['payload']
+                return None
+            if path.startswith('registros-operacoes/'):
+                return {**self.audit,'pessoa_id':1,'operacao':'entrega'}
+            return {**self.person, **({'dt_ultima_cesta':today} if hasattr(self,'audit') else {})}
+        call.side_effect = response
         collection.return_value = [{'id': 15, 'pessoa_id': 1, 'data_entrega': today, 'frequencia_dias': 7}]
         response = self.client.post('/renovar_cesta/1', data={'csrf_token': 'teste'})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(call.call_args_list[1].args, ('POST', 'cestas/1/'))
-        self.assertEqual(call.call_args_list[1].kwargs['payload'], {'data_entrega': today})
+        self.assertEqual(call.call_args_list[1].kwargs['payload']['data_entrega'], today)
+        self.assertEqual(self.audit['autor'], 'operador')
         with self.client.session_transaction() as session:
             self.assertTrue(any('confirmada' in message for _, message in session['_flashes']))
 
